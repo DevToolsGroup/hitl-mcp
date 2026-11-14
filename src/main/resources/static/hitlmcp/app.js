@@ -22,8 +22,10 @@ let socket = null;
 let pageSize = DEFAULT_PAGE_SIZE;
 
 function connect() {
-    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    socket = new WebSocket(`${protocol}//${location.host}/hitlmcp/ws`);
+    // Relative to the page, so it also works when the application has a servlet context path
+    const url = new URL('ws', location.href);
+    url.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    socket = new WebSocket(url);
 
     socket.addEventListener('open', () => setConnected(true));
     socket.addEventListener('close', () => {

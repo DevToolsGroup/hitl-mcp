@@ -33,10 +33,9 @@ import org.devtoolsgroup.hitlmcp.HitlMcpServer;
 public class ExamplePlainJavaApplication {
 
     public static void main(String[] args) {
-        HitlMcpServer server = HitlMcpServer.builder()
+        HitlMcpServer.builder()
                 .tools(new CalculatorTools(), new TextTools())
                 .port(8080)
                 .start(args);
-        System.out.println("Review page: http://localhost:" + server.getPort() + "/hitlmcp/");
     }
 }

@@ -260,10 +260,23 @@ A library cannot ship an `application.properties`, because the application's fil
 | `hitlmcp.history.input-max-chars` | `2000` | Ni, max characters of input stored in history |
 | `hitlmcp.history.output-max-chars` | `2000` | No, max characters of output stored in history |
 
-## Connecting Claude Code
+## Connecting an AI agent
 
-```bash
-claude mcp add --transport http hitl-mcp http://localhost:8080/mcp
+When the web server is up, the library prints both URLs to the console,
+for Spring Boot applications and for `HitlMcpServer.builder()` alike:
+
+```text
+HITL MCP server is running:
+  MCP endpoint, to register with an AI agent: http://127.0.0.1:8080/mcp
+  Review page, to open in a browser:          http://127.0.0.1:8080/hitlmcp/
 ```
 
-The review page is available at `http://localhost:8080/hitlmcp/`.
+The URLs show the real address, port (also when picked at random with port `0`),
+servlet context path and MCP endpoint.
+They are written with `System.out`, so they are visible whatever logging configuration the application has.
+
+Registering the server with Claude Code:
+
+```bash
+claude mcp add --transport http hitl-mcp http://127.0.0.1:8080/mcp
+```
