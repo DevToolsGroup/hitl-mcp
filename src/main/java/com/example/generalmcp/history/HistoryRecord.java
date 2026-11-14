@@ -19,6 +19,8 @@ public record HistoryRecord(
         COMPLETED,
         FAILED,
         CALL_DENIED,
-        RESULT_DENIED
+        RESULT_DENIED,
+        /** The server stopped waiting for the user, e.g. on shutdown. */
+        CANCELLED
     }
 }

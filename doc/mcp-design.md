@@ -84,6 +84,7 @@ The decorator performs these steps for each invocation:
    `Invocation denied by user. Reason: ...`.
 3. Execute the real tool.
    If the tool throws an exception, the error text becomes the result to review.
+   If the user accepts it, the agent receives the error.
 4. Publish the result and block until the user decides on it.
    If the user denies it, return an error result to the agent:
    `Result withheld by user. Reason: ...`.
@@ -106,7 +107,9 @@ AWAITING_CALL_APPROVAL ──accept──► EXECUTING ──► AWAITING_RESULT
 A decision is applied only if it matches the current phase of the review.
 That makes duplicate clicks, or clicks from a second browser tab, harmless: the first decision wins.
 
-If the agent cancels a request or disconnects, the pending review is removed from the page.
+The server does not detect that the agent cancelled a request or disconnected.
+Such a review stays on the page until the user decides on it; the answer then goes nowhere.
+If the server is stopped while a call is waiting, the call ends with the `CANCELLED` status.
 
 ### WebSocket protocol
 
@@ -149,7 +152,7 @@ Every finished invocation is appended to a file in the JSON Lines format, one JS
 A record contains:
 
 - invocation id, tool name, start and finish timestamps;
-- final status: `COMPLETED`, `FAILED`, `CALL_DENIED` or `RESULT_DENIED`;
+- final status: `COMPLETED`, `FAILED`, `CALL_DENIED`, `RESULT_DENIED` or `CANCELLED`;
 - denial reason, if any;
 - input, truncated to Ni characters, and its full length;
 - output, truncated to No characters, and its full length.
@@ -174,14 +177,14 @@ All settings live in `application.properties`:
 | `server.port` | `8080` | HTTP port |
 | `server.address` | `127.0.0.1` | Bind address, localhost only |
 | `app.ui.page-size` | `2000` | N, characters per page in a card |
-| `app.history.file` | `data/call-history.jsonl` | Path of the history file |
+| `app.history.file` | `log/call-history.jsonl` | Path of the history file |
 | `app.history.input-max-chars` | `2000` | Ni, max characters of input stored in history |
 | `app.history.output-max-chars` | `2000` | No, max characters of output stored in history |
 
 ## Connecting Claude Code
 
 ```bash
-claude mcp add --transport http general-mcp http://localhost:8080/mcp
+claude mcp add --transport http hitl-mcp http://localhost:8080/mcp
 ```
 
 The review page is available at `http://localhost:8080/`.

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HITL MCP</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>Tool call review</h1>
+    <span id="connection" class="connection offline">connecting…</span>
+</header>
+
+<main>
+    <p id="empty" class="empty">No pending calls.</p>
+    <div id="cards"></div>
+</main>
+
+<template id="card-template">
+    <section class="card">
+        <div class="card-head">
+            <span class="phase"></span>
+            <span class="tool"></span>
+            <span class="time"></span>
+            <span class="id"></span>
+        </div>
+
+        <h3>Input</h3>
+        <pre class="input"></pre>
+
+        <div class="output-block" hidden>
+            <h3 class="output-title">Result</h3>
+            <pre class="output"></pre>
+        </div>
+
+        <div class="controls">
+            <textarea class="reason" rows="2" placeholder="Reason for denial (optional, sent to the agent)"></textarea>
+            <div class="buttons">
+                <button class="accept">Accept</button>
+                <button class="deny">Deny</button>
+            </div>
+        </div>
+    </section>
+</template>
+
+<script src="app.js"></script>
+</body>
+</html>
