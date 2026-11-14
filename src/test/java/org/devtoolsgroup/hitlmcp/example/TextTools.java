@@ -1,15 +1,16 @@
-package org.devtoolsgroup.hitlmcp.tools;
+package org.devtoolsgroup.hitlmcp.example;
 
+import org.devtoolsgroup.hitlmcp.HitlMcpTools;
+import org.devtoolsgroup.hitlmcp.tools.PlainTextResultConverter;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Demo tool producing long outputs, handy for trying out pagination on the review page.
  */
-@Component
+@HitlMcpTools
 public class TextTools {
 
     static final int MAX_LENGTH = 1_000_000;

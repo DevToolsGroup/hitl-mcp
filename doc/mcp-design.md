@@ -2,7 +2,9 @@
 
 ## What this project is
 
-This is an MCP (Model Context Protocol) server that an AI agent connects to over HTTP.
+This is a Java library for building MCP (Model Context Protocol) servers that an AI agent connects to over HTTP.
+An application adds the library as a dependency, implements its own tools,
+and the library publishes them over MCP.
 Its distinguishing feature is that a human reviews every tool invocation twice:
 
 1. **Before execution.**
@@ -25,9 +27,10 @@ The page receives updates from the server over a WebSocket.
 - Several tool invocations may run in parallel.
   The user sees all of them at once and can decide on any of them in any order.
 - A pending invocation waits for the user forever, there is no timeout.
-- The tools themselves are simple demo tools: adding and multiplying numbers,
+- The library contains no tools of its own, the applications using it provide them.
+  The approval mechanism does not depend on the tools.
+- The examples in `src/test` have simple demo tools: adding and multiplying numbers,
   and generating random text of a given length (useful for trying out long outputs).
-  The approval mechanism does not depend on the tools and works for any tool added later.
 - Every finished invocation is appended to a history file.
 
 ## Technology
@@ -51,7 +54,8 @@ No database and no message broker are used.
 ### Frontend
 
 Plain HTML, CSS and JavaScript, without any frameworks or libraries.
-The files are served by Spring Boot from `src/main/resources/static/`.
+The files are served by Spring Boot from `src/main/resources/static/hitlmcp/`, at `/hitlmcp/`.
+A separate folder keeps them from clashing with the application's own static files.
 Only built-in browser APIs are used: `WebSocket`, `JSON` and the DOM.
 
 ## Architecture
@@ -63,7 +67,7 @@ Only built-in browser APIs are used: `WebSocket`, `JSON` and the DOM.
                      InterceptingToolCallback ◄─── decorator around every tool
                         │            │
                         │            ▼
-                        │      ReviewRegistry ──WebSocket /ws──► browser page
+                        │      ReviewRegistry ──WebSocket /hitlmcp/ws──► browser page
                         │            ▲                              │
                         │            └──────── decisions ───────────┘
                         ▼
@@ -73,9 +77,66 @@ Only built-in browser APIs are used: `WebSocket`, `JSON` and the DOM.
                    HistoryWriter ──► history file (JSON Lines)
 ```
 
+### Using the library
+
+The library is a Spring Boot auto-configuration, so it works the same way in two kinds of applications.
+
+Tools are Spring AI `@Tool` methods.
+Only classes annotated with `@HitlMcpTools` are published, `@Tool` methods of other classes are ignored.
+`@HitlMcpTools` is also a Spring `@Component`.
+
+```java
+@HitlMcpTools
+public class JiraTools {
+
+    @Tool(description = "Finds issues by JQL")
+    public String search(@ToolParam(description = "JQL query") String jql) { ... }
+}
+```
+
+A **Spring Boot application** only adds the dependency.
+Its component scan finds the `@HitlMcpTools` classes, and the auto-configuration does the rest.
+
+A **plain Java application** starts the server with a builder.
+The builder runs Spring Boot internally, so the application needs no Spring code of its own.
+
+```java
+HitlMcpServer server = HitlMcpServer.builder()
+        .tools(new JiraTools())                   // classes must be annotated with @HitlMcpTools
+        .port(8080)                               // server.port, 0 picks a free port
+        .historyFile("log/history.jsonl")         // hitlmcp.history.file
+        .property("hitlmcp.ui.page-size", 5000)   // any other property
+        .start(args);                             // returns once the server is up
+// server.close() stops it
+```
+
+Things to know when using the library:
+
+- Compile the tools with `-parameters` (`<maven.compiler.parameters>true</maven.compiler.parameters>`),
+  otherwise the tool arguments are named `arg0`, `arg1`, ...
+  Applications using `spring-boot-starter-parent` have it already.
+- Do not declare `ToolCallbackProvider` or `ToolCallback` beans:
+  Spring AI would publish them directly, bypassing the review.
+- A Spring Boot application must use the same Spring Boot and Spring AI generations as the library
+  (Boot 4, Spring AI 2).
+- A plain Java application gets Spring Boot, Tomcat and Jackson as transitive dependencies.
+
+The library is installed into the local Maven repository with `mvn install`
+and used as the dependency `org.devtoolsgroup:hitl-mcp-server:0.1.0-SNAPSHOT`.
+
+The examples in `src/test/java/org/devtoolsgroup/hitlmcp/example/` show both kinds of applications:
+
+```bash
+# Spring Boot application
+mvn spring-boot:test-run
+# Plain Java application
+mvn spring-boot:test-run -Dspring-boot.run.main-class=org.devtoolsgroup.hitlmcp.example.ExamplePlainJavaApplication
+```
+
 ### Tool interception
 
-Every Spring AI `ToolCallback` is wrapped in a decorator before it is registered with the MCP server.
+Every `@Tool` method of a `@HitlMcpTools` bean becomes a Spring AI `ToolCallback`,
+which is wrapped in a decorator before it is registered with the MCP server.
 The real tools know nothing about approvals or history.
 The decorator performs these steps for each invocation:
 
@@ -166,7 +227,7 @@ The full lengths make it visible when a stored value was truncated.
 ### Security
 
 - The server binds to `127.0.0.1` only, so it is not reachable from other machines.
-- The `Origin` header is checked on `/mcp` and `/ws`.
+- The `Origin` header is checked on `/mcp` and `/hitlmcp/ws`.
   Only `http://localhost:<port>` and `http://127.0.0.1:<port>` are allowed,
   or no `Origin` at all for non-browser clients.
   This protects against DNS rebinding attacks from web pages opened in the same browser,
@@ -174,16 +235,20 @@ The full lengths make it visible when a stored value was truncated.
 
 ## Configuration
 
-All settings live in `application.properties`:
+The library's defaults live in `hitlmcp-defaults.properties`.
+They are loaded with the lowest precedence,
+so the application overrides any of them in its own `application.properties`,
+with environment variables, command line arguments or `HitlMcpServer.Builder.property(...)`.
+A library cannot ship an `application.properties`, because the application's file of the same name would hide it.
 
 | Property | Default | Meaning |
 |---|---|---|
 | `server.port` | `8080` | HTTP port |
 | `server.address` | `127.0.0.1` | Bind address, localhost only |
-| `app.ui.page-size` | `2000` | N, characters per page in a card |
-| `app.history.file` | `log/call-history.jsonl` | Path of the history file |
-| `app.history.input-max-chars` | `2000` | Ni, max characters of input stored in history |
-| `app.history.output-max-chars` | `2000` | No, max characters of output stored in history |
+| `hitlmcp.ui.page-size` | `2000` | N, characters per page in a card |
+| `hitlmcp.history.file` | `log/call-history.jsonl` | Path of the history file |
+| `hitlmcp.history.input-max-chars` | `2000` | Ni, max characters of input stored in history |
+| `hitlmcp.history.output-max-chars` | `2000` | No, max characters of output stored in history |
 
 ## Connecting Claude Code
 
@@ -191,4 +256,4 @@ All settings live in `application.properties`:
 claude mcp add --transport http hitl-mcp http://localhost:8080/mcp
 ```
 
-The review page is available at `http://localhost:8080/`.
+The review page is available at `http://localhost:8080/hitlmcp/`.

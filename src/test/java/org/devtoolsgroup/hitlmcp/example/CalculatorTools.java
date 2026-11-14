@@ -1,13 +1,13 @@
-package org.devtoolsgroup.hitlmcp.tools;
+package org.devtoolsgroup.hitlmcp.example;
 
+import org.devtoolsgroup.hitlmcp.HitlMcpTools;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
-import org.springframework.stereotype.Component;
 
 /**
- * Demo tools. They know nothing about reviews or history, see {@link InterceptingToolCallback}.
+ * Demo tools. They know nothing about reviews or history: the library wraps every tool of a {@link HitlMcpTools} class.
  */
-@Component
+@HitlMcpTools
 public class CalculatorTools {
 
     @Tool(name = "add", description = "Adds two numbers and returns the sum")

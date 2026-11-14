@@ -23,7 +23,7 @@ let pageSize = DEFAULT_PAGE_SIZE;
 
 function connect() {
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    socket = new WebSocket(`${protocol}//${location.host}/ws`);
+    socket = new WebSocket(`${protocol}//${location.host}/hitlmcp/ws`);
 
     socket.addEventListener('open', () => setConnected(true));
     socket.addEventListener('close', () => {

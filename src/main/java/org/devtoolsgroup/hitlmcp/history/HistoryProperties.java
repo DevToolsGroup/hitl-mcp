@@ -9,6 +9,6 @@ import java.nio.file.Path;
  * @param inputMaxChars  how many characters of the tool input are stored
  * @param outputMaxChars how many characters of the tool output are stored
  */
-@ConfigurationProperties("app.history")
+@ConfigurationProperties("hitlmcp.history")
 public record HistoryProperties(Path file, int inputMaxChars, int outputMaxChars) {
 }
