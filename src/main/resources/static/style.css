@@ -152,6 +152,30 @@ pre {
     word-break: break-word;
 }
 
+.pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.pager button {
+    padding: 2px 12px;
+    background: var(--code-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+.page-info {
+    min-width: 64px;
+    text-align: center;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+}
+
 pre.error {
     color: var(--deny);
 }

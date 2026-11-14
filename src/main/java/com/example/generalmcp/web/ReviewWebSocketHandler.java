@@ -34,6 +34,7 @@ public class ReviewWebSocketHandler extends TextWebSocketHandler {
 
     private final ReviewRegistry registry;
     private final JsonMapper jsonMapper;
+    private final UiProperties uiProperties;
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
     record DecisionMessage(String type, String id, Phase phase, boolean approved, String reason) {
@@ -44,7 +45,7 @@ public class ReviewWebSocketHandler extends TextWebSocketHandler {
         // The decorator makes sending thread-safe; broadcasts come from many tool-call threads.
         WebSocketSession safe = new ConcurrentWebSocketSessionDecorator(session, SEND_TIME_LIMIT_MS, BUFFER_SIZE_LIMIT);
         sessions.put(session.getId(), safe);
-        send(safe, Map.of("type", "snapshot", "reviews", registry.snapshot()));
+        send(safe, Map.of("type", "snapshot", "pageSize", uiProperties.pageSize(), "reviews", registry.snapshot()));
     }
 
     @Override

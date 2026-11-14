@@ -119,7 +119,7 @@ Server to browser:
 
 | Type | Payload | Meaning |
 |---|---|---|
-| `snapshot` | list of reviews | Sent on connect, so a page refresh or a late connection loses nothing |
+| `snapshot` | list of reviews, page size N | Sent on connect, so a page refresh or a late connection loses nothing |
 | `upsert` | one review | A review was created or changed its phase |
 | `remove` | review id | A review is finished |
 
@@ -142,7 +142,10 @@ A card contains:
 
 Inputs and outputs can be very long, so each text block on a card is paginated.
 A page shows at most N characters, where N is configurable.
+N counts characters of the displayed text, that is, after JSON pretty-printing.
+A page boundary never splits an emoji or another character made of two UTF-16 code units.
 The page controls are minimal: previous page, `current / total`, next page.
+They are hidden when the text fits on one page.
 
 The page reconnects automatically if the WebSocket connection is lost.
 
