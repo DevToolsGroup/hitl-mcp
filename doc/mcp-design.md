@@ -115,8 +115,11 @@ Things to know when using the library:
 - Compile the tools with `-parameters` (`<maven.compiler.parameters>true</maven.compiler.parameters>`),
   otherwise the tool arguments are named `arg0`, `arg1`, ...
   Applications using `spring-boot-starter-parent` have it already.
-- Do not declare `ToolCallbackProvider` or `ToolCallback` beans:
-  Spring AI would publish them directly, bypassing the review.
+- Publish tools only through `@HitlMcpTools` classes.
+  Spring AI would publish other tools directly, bypassing the review:
+  `ToolCallbackProvider` or `ToolCallback` beans, `SyncToolSpecification` beans,
+  `@McpTool` methods when the annotation scanner is enabled.
+  The library refuses to start when it finds such tools, see [Security](#security).
 - A Spring Boot application must use the same Spring Boot and Spring AI generations as the library
   (Boot 4, Spring AI 2).
 - A plain Java application gets Spring Boot, Tomcat and Jackson as transitive dependencies.
@@ -227,6 +230,13 @@ The full lengths make it visible when a stored value was truncated.
 ### Security
 
 - The server binds to `127.0.0.1` only, so it is not reachable from other machines.
+- The application does not start if a tool would be published without review.
+  After all beans are created, and before the web server accepts requests, `UnreviewedToolsCheck` verifies that:
+  - every `ToolCallback` and `ToolCallbackProvider` bean contains reviewed tools only;
+  - every tool the MCP server publishes is a reviewed one, whatever way it was registered.
+
+  Tools of MCP servers the application is a client of are ignored,
+  unless `spring.ai.mcp.server.expose-mcp-client-tools=true` makes Spring AI publish them.
 - The `Origin` header is checked on `/mcp` and `/hitlmcp/ws`.
   Only `http://localhost:<port>` and `http://127.0.0.1:<port>` are allowed,
   or no `Origin` at all for non-browser clients.

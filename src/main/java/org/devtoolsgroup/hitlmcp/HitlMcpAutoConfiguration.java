@@ -5,6 +5,7 @@ import org.devtoolsgroup.hitlmcp.history.HistoryWriter;
 import org.devtoolsgroup.hitlmcp.review.ReviewRegistry;
 import org.devtoolsgroup.hitlmcp.security.LocalOriginFilter;
 import org.devtoolsgroup.hitlmcp.tools.ToolsConfig;
+import org.devtoolsgroup.hitlmcp.tools.UnreviewedToolsCheck;
 import org.devtoolsgroup.hitlmcp.web.ReviewWebSocketHandler;
 import org.devtoolsgroup.hitlmcp.web.UiConfig;
 import org.devtoolsgroup.hitlmcp.web.UiProperties;
@@ -21,7 +22,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @EnableConfigurationProperties({HistoryProperties.class, UiProperties.class})
-@Import({ReviewRegistry.class, HistoryWriter.class, ToolsConfig.class, LocalOriginFilter.class,
-        ReviewWebSocketHandler.class, WebSocketConfig.class, UiConfig.class})
+@Import({ReviewRegistry.class, HistoryWriter.class, ToolsConfig.class, UnreviewedToolsCheck.class,
+        LocalOriginFilter.class, ReviewWebSocketHandler.class, WebSocketConfig.class, UiConfig.class})
 public class HitlMcpAutoConfiguration {
 }
