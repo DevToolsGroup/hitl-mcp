@@ -1,13 +1,13 @@
-package com.example.generalmcp.tools;
+package org.devtoolsgroup.hitlmcp.tools;
 
-import com.example.generalmcp.history.HistoryRecord;
-import com.example.generalmcp.history.HistoryRecord.Status;
-import com.example.generalmcp.history.HistoryWriter;
-import com.example.generalmcp.review.Decision;
-import com.example.generalmcp.review.Review;
-import com.example.generalmcp.review.ReviewDeniedException;
-import com.example.generalmcp.review.ReviewInterruptedException;
-import com.example.generalmcp.review.ReviewRegistry;
+import org.devtoolsgroup.hitlmcp.history.HistoryRecord;
+import org.devtoolsgroup.hitlmcp.history.HistoryRecord.Status;
+import org.devtoolsgroup.hitlmcp.history.HistoryWriter;
+import org.devtoolsgroup.hitlmcp.review.Decision;
+import org.devtoolsgroup.hitlmcp.review.Review;
+import org.devtoolsgroup.hitlmcp.review.ReviewDeniedException;
+import org.devtoolsgroup.hitlmcp.review.ReviewInterruptedException;
+import org.devtoolsgroup.hitlmcp.review.ReviewRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.ToolCallback;

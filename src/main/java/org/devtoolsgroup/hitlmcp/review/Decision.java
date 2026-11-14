@@ -1,4 +1,4 @@
-package com.example.generalmcp.review;
+package org.devtoolsgroup.hitlmcp.review;
 
 /**
  * @param approved true if the user pressed Accept

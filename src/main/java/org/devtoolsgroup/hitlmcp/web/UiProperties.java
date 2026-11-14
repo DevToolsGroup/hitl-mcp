@@ -1,4 +1,4 @@
-package com.example.generalmcp.web;
+package org.devtoolsgroup.hitlmcp.web;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -1,4 +1,4 @@
-package com.example.generalmcp.review;
+package org.devtoolsgroup.hitlmcp.review;
 
 /**
  * Thrown to the MCP layer when the user denies a call or withholds a result.

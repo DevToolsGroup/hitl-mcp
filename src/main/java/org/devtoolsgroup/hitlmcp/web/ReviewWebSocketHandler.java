@@ -1,9 +1,9 @@
-package com.example.generalmcp.web;
+package org.devtoolsgroup.hitlmcp.web;
 
-import com.example.generalmcp.review.Decision;
-import com.example.generalmcp.review.Phase;
-import com.example.generalmcp.review.ReviewEvent;
-import com.example.generalmcp.review.ReviewRegistry;
+import org.devtoolsgroup.hitlmcp.review.Decision;
+import org.devtoolsgroup.hitlmcp.review.Phase;
+import org.devtoolsgroup.hitlmcp.review.ReviewEvent;
+import org.devtoolsgroup.hitlmcp.review.ReviewRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

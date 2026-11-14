@@ -1,4 +1,4 @@
-package com.example.generalmcp.tools;
+package org.devtoolsgroup.hitlmcp.tools;
 
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;

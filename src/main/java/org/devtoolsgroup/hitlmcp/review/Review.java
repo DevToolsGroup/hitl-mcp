@@ -1,4 +1,4 @@
-package com.example.generalmcp.review;
+package org.devtoolsgroup.hitlmcp.review;
 
 import lombok.AccessLevel;
 import lombok.Getter;

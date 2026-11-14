@@ -25,7 +25,8 @@ The page receives updates from the server over a WebSocket.
 - Several tool invocations may run in parallel.
   The user sees all of them at once and can decide on any of them in any order.
 - A pending invocation waits for the user forever, there is no timeout.
-- The tools themselves are simple demo tools (adding and multiplying numbers).
+- The tools themselves are simple demo tools: adding and multiplying numbers,
+  and generating random text of a given length (useful for trying out long outputs).
   The approval mechanism does not depend on the tools and works for any tool added later.
 - Every finished invocation is appended to a history file.
 

@@ -1,7 +1,7 @@
-package com.example.generalmcp.tools;
+package org.devtoolsgroup.hitlmcp.tools;
 
-import com.example.generalmcp.history.HistoryWriter;
-import com.example.generalmcp.review.ReviewRegistry;
+import org.devtoolsgroup.hitlmcp.history.HistoryWriter;
+import org.devtoolsgroup.hitlmcp.review.ReviewRegistry;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
@@ -18,10 +18,10 @@ public class ToolsConfig {
      * To add tools, pass more objects to {@code toolObjects(...)}.
      */
     @Bean
-    public ToolCallbackProvider interceptedTools(CalculatorTools calculatorTools, ReviewRegistry reviews,
-                                                 HistoryWriter historyWriter) {
+    public ToolCallbackProvider interceptedTools(CalculatorTools calculatorTools, TextTools textTools,
+                                                 ReviewRegistry reviews, HistoryWriter historyWriter) {
         ToolCallback[] tools = MethodToolCallbackProvider.builder()
-                .toolObjects(calculatorTools)
+                .toolObjects(calculatorTools, textTools)
                 .build()
                 .getToolCallbacks();
         return ToolCallbackProvider.from(Arrays.stream(tools)

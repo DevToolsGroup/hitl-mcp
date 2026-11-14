@@ -1,4 +1,4 @@
-package com.example.generalmcp.history;
+package org.devtoolsgroup.hitlmcp.history;
 
 import java.time.Instant;
 

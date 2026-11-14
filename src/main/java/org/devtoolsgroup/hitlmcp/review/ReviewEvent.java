@@ -1,4 +1,4 @@
-package com.example.generalmcp.review;
+package org.devtoolsgroup.hitlmcp.review;
 
 /**
  * Published by {@link ReviewRegistry} whenever the set of pending reviews changes.

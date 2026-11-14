@@ -1,4 +1,4 @@
-package com.example.generalmcp.web;
+package org.devtoolsgroup.hitlmcp.web;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

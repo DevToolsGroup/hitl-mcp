@@ -1,4 +1,4 @@
-package com.example.generalmcp;
+package org.devtoolsgroup.hitlmcp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

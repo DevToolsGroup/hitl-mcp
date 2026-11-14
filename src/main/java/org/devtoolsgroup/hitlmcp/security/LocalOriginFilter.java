@@ -1,4 +1,4 @@
-package com.example.generalmcp.security;
+package org.devtoolsgroup.hitlmcp.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

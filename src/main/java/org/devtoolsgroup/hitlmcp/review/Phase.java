@@ -1,4 +1,4 @@
-package com.example.generalmcp.review;
+package org.devtoolsgroup.hitlmcp.review;
 
 public enum Phase {
     /** The user decides whether the tool may be called. */
