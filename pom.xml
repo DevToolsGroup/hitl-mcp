@@ -71,14 +71,6 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
-            <!-- Only for running the examples in src/test: mvn spring-boot:test-run -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>org.devtoolsgroup.hitlmcp.example.ExampleSpringBootApplication</mainClass>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>
