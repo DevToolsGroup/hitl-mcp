@@ -209,7 +209,7 @@ A card contains:
 - the tool name and the time of the call;
 - the input arguments, pretty-printed, and the result once it is available;
 - in the result review, a "Reviewer updated result" text area for a replacement of the result;
-  while it is not empty, the **Accept** button reads **Approve updated result**;
+  while it is not empty, the **Accept** button reads **Accept updated result**;
 - a text area for the reason of denial;
 - the **Accept** and **Deny** buttons.
 

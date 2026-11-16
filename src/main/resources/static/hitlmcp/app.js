@@ -148,7 +148,7 @@ function decide(card, approved) {
  */
 function updateAcceptLabel(el) {
     const updated = el.querySelector('.updated-result').value.trim() !== '';
-    el.querySelector('.accept').textContent = updated ? 'Approve updated result' : 'Accept';
+    el.querySelector('.accept').textContent = updated ? 'Accept updated result' : 'Accept';
 }
 
 function setButtonsEnabled(el, enabled) {
