@@ -55,7 +55,7 @@ No database and no message broker are used.
 ### Frontend
 
 Plain HTML, CSS and JavaScript, without any frameworks or libraries.
-The files are served by Spring Boot from `src/main/resources/static/hitlmcp/`, at `/hitlmcp/`.
+The files are served by Spring Boot from `src/main/resources/static/mcp-review/`, at `/mcp-review/`.
 A separate folder keeps them from clashing with the application's own static files.
 Only built-in browser APIs are used: `WebSocket`, `JSON` and the DOM.
 
@@ -68,7 +68,7 @@ Only built-in browser APIs are used: `WebSocket`, `JSON` and the DOM.
                      InterceptingToolCallback ◄─── decorator around every tool
                         │            │
                         │            ▼
-                        │      ReviewRegistry ──WebSocket /hitlmcp/ws──► browser page
+                        │      ReviewRegistry ──WebSocket /mcp-review/ws──► browser page
                         │            ▲                              │
                         │            └──────── decisions ───────────┘
                         ▼
@@ -251,7 +251,7 @@ The full lengths make it visible when a stored value was truncated.
 
   Tools of MCP servers the application is a client of are ignored,
   unless `spring.ai.mcp.server.expose-mcp-client-tools=true` makes Spring AI publish them.
-- The `Origin` header is checked on `/mcp` and `/hitlmcp/ws`.
+- The `Origin` header is checked on `/mcp` and `/mcp-review/ws`.
   Only `http://localhost:<port>` and `http://127.0.0.1:<port>` are allowed,
   or no `Origin` at all for non-browser clients.
   This protects against DNS rebinding attacks from web pages opened in the same browser,
@@ -282,7 +282,7 @@ for Spring Boot applications and for `HitlMcpServer.builder()` alike:
 ```text
 HITL MCP server is running:
   MCP endpoint, to register with an AI agent: http://127.0.0.1:8080/mcp
-  Review page, to open in a browser:          http://127.0.0.1:8080/hitlmcp/
+  Review page, to open in a browser:          http://127.0.0.1:8080/mcp-review/
 ```
 
 The URLs show the real address, port (also when picked at random with port `0`),

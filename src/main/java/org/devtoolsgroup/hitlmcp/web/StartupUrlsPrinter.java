@@ -45,7 +45,7 @@ import java.net.InetAddress;
  */
 public class StartupUrlsPrinter implements ApplicationListener<WebServerInitializedEvent> {
 
-    static final String UI_PATH = "/hitlmcp/";
+    static final String UI_PATH = "/mcp-review/";
 
     private final ObjectProvider<ServerProperties> serverProperties;
     private final ObjectProvider<McpServerProperties> mcpProperties;

@@ -29,7 +29,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Serves the review page at {@code /hitlmcp/}. The files live in {@code static/hitlmcp/},
+ * Serves the review page at {@code /mcp-review/}. The files live in {@code static/mcp-review/},
  * a separate folder so they never clash with the application's own static files.
  */
 @Configuration
@@ -37,7 +37,7 @@ public class UiConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController("/hitlmcp", "/hitlmcp/");
-        registry.addViewController("/hitlmcp/").setViewName("forward:/hitlmcp/index.html");
+        registry.addRedirectViewController("/mcp-review", "/mcp-review/");
+        registry.addViewController("/mcp-review/").setViewName("forward:/mcp-review/index.html");
     }
 }

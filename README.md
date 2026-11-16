@@ -59,7 +59,7 @@ public class CalculatorTools {
 ```
 
 On startup the server prints its URLs.
-Open the review page at `http://127.0.0.1:8080/hitlmcp/`
+Open the review page at `http://127.0.0.1:8080/mcp-review/`
 and point your agent at `http://127.0.0.1:8080/mcp`.
 
 Each call the agent makes now appears as a card on the page and waits for your decision.

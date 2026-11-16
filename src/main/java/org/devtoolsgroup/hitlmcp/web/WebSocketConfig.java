@@ -39,7 +39,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(handler, "/hitlmcp/ws")
+        registry.addHandler(handler, "/mcp-review/ws")
                 .setAllowedOriginPatterns("http://localhost:*", "http://127.0.0.1:*", "http://[::1]:*");
     }
 }
