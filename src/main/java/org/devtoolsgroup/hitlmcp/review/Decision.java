@@ -27,17 +27,17 @@ package org.devtoolsgroup.hitlmcp.review;
 /**
  * @param approved      true if the user pressed Accept
  * @param reason        optional text entered by the user, sent to the agent on denial
- * @param updatedOutput optional text entered by the user when reviewing a result;
+ * @param updatedResult optional text entered by the user when reviewing a result;
  *                      if present and the result is accepted, the agent receives it instead of the tool output
  */
-public record Decision(boolean approved, String reason, String updatedOutput) {
+public record Decision(boolean approved, String reason, String updatedResult) {
 
     public Decision(boolean approved, String reason) {
         this(approved, reason, null);
     }
 
     /** True if the user entered a replacement for the tool output. Blank text counts as no replacement. */
-    public boolean hasUpdatedOutput() {
-        return updatedOutput != null && !updatedOutput.isBlank();
+    public boolean hasUpdatedResult() {
+        return updatedResult != null && !updatedResult.isBlank();
     }
 }

@@ -62,7 +62,7 @@ public class ReviewWebSocketHandler extends TextWebSocketHandler {
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
     record DecisionMessage(String type, String id, Phase phase, boolean approved, String reason,
-                           String updatedOutput) {
+                           String updatedResult) {
     }
 
     @Override
@@ -87,8 +87,8 @@ public class ReviewWebSocketHandler extends TextWebSocketHandler {
                 return;
             }
             // The output can only be replaced when reviewing a result; there is no output before the call.
-            String updatedOutput = msg.phase() == Phase.AWAITING_RESULT_APPROVAL ? msg.updatedOutput() : null;
-            Decision decision = new Decision(msg.approved(), msg.reason(), updatedOutput);
+            String updatedResult = msg.phase() == Phase.AWAITING_RESULT_APPROVAL ? msg.updatedResult() : null;
+            Decision decision = new Decision(msg.approved(), msg.reason(), updatedResult);
             if (!registry.decide(msg.id(), msg.phase(), decision)) {
                 log.debug("Decision for {} in phase {} ignored (already decided or gone)", msg.id(), msg.phase());
             }

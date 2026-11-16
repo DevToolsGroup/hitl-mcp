@@ -39,7 +39,7 @@ public record HistoryRecord(
         String input,
         String output,
         /** Text the reviewer returned to the agent instead of {@code output}; null if the output was not changed. */
-        String updatedOutput) {
+        String updatedResult) {
 
     public enum Status {
         COMPLETED,

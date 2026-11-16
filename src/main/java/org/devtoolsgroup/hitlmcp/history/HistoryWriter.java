@@ -62,9 +62,9 @@ public class HistoryWriter {
         line.put("inputLength", length(record.input()));
         line.put("output", truncate(record.output(), properties.outputMaxChars()));
         line.put("outputLength", length(record.output()));
-        if (record.updatedOutput() != null) {
-            line.put("updatedOutput", truncate(record.updatedOutput(), properties.outputMaxChars()));
-            line.put("updatedOutputLength", length(record.updatedOutput()));
+        if (record.updatedResult() != null) {
+            line.put("updatedResult", truncate(record.updatedResult(), properties.outputMaxChars()));
+            line.put("updatedResultLength", length(record.updatedResult()));
         }
 
         Path file = properties.file();

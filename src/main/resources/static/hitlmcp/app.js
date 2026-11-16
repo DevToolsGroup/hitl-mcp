@@ -96,6 +96,7 @@ function createCard(review) {
 
     el.querySelector('.accept').addEventListener('click', () => decide(card, true));
     el.querySelector('.deny').addEventListener('click', () => decide(card, false));
+    el.querySelector('.updated-result').addEventListener('input', () => updateAcceptLabel(el));
     return card;
 }
 
@@ -116,7 +117,8 @@ function renderCard(card, phaseChanged) {
     const decidable = review.phase !== 'EXECUTING';
     if (phaseChanged) {
         el.querySelector('.reason').value = '';
-        el.querySelector('.updated-output').value = '';
+        el.querySelector('.updated-result').value = '';
+        updateAcceptLabel(el);
     }
     el.querySelector('.controls').hidden = !decidable;
     setButtonsEnabled(el, decidable);
@@ -134,10 +136,19 @@ function decide(card, approved) {
         approved,
         reason: card.el.querySelector('.reason').value,
         // The server uses it only in the AWAITING_RESULT_APPROVAL phase; blank means "keep the tool's result".
-        updatedOutput: card.el.querySelector('.updated-output').value,
+        updatedResult: card.el.querySelector('.updated-result').value,
     }));
     // Wait for the server to confirm the transition; prevents double clicks.
     setButtonsEnabled(card.el, false);
+}
+
+/**
+ * Tells the user which result the agent will get on Accept.
+ * Blank text counts as empty, the same way the server treats it.
+ */
+function updateAcceptLabel(el) {
+    const updated = el.querySelector('.updated-result').value.trim() !== '';
+    el.querySelector('.accept').textContent = updated ? 'Approve updated result' : 'Accept';
 }
 
 function setButtonsEnabled(el, enabled) {

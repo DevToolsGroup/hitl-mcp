@@ -187,7 +187,7 @@ pre.error {
     align-items: stretch;
 }
 
-.reason, .updated-output {
+.reason, .updated-result {
     flex: 1;
     min-width: 0;
     padding: 6px 8px;
@@ -199,7 +199,7 @@ pre.error {
     font: inherit;
 }
 
-.updated-output {
+.updated-result {
     display: block;
     width: 100%;
     font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;

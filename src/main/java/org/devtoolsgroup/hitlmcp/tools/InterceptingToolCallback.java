@@ -72,7 +72,7 @@ public class InterceptingToolCallback implements ToolCallback {
         Review review = reviews.create(delegate.getToolDefinition().name(), toolInput);
         Status status = Status.CANCELLED;
         String output = null;
-        String updatedOutput = null;
+        String updatedResult = null;
         String denialReason = null;
         try {
             Decision callDecision = reviews.awaitCallApproval(review);
@@ -97,11 +97,11 @@ public class InterceptingToolCallback implements ToolCallback {
                 denialReason = resultDecision.reason();
                 throw new ReviewDeniedException("Result withheld by user.", denialReason);
             }
-            if (resultDecision.hasUpdatedOutput()) {
+            if (resultDecision.hasUpdatedResult()) {
                 // The reviewer's text replaces the tool output, also when the tool failed.
-                updatedOutput = resultDecision.updatedOutput();
+                updatedResult = resultDecision.updatedResult();
                 status = Status.COMPLETED;
-                return updatedOutput;
+                return updatedResult;
             }
             if (failure != null) {
                 status = Status.FAILED;
@@ -115,7 +115,7 @@ public class InterceptingToolCallback implements ToolCallback {
         } finally {
             reviews.remove(review);
             historyWriter.append(new HistoryRecord(review.getId(), review.getTool(), review.getStartedAt(),
-                    Instant.now(), status, denialReason, toolInput, output, updatedOutput));
+                    Instant.now(), status, denialReason, toolInput, output, updatedResult));
         }
     }
 }
