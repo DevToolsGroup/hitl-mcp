@@ -55,7 +55,8 @@ public class HistoryWriter {
         line.put("startedAt", record.startedAt().toString());
         line.put("finishedAt", record.finishedAt().toString());
         line.put("status", record.status());
-        if (record.denialReason() != null) {
+        // A denial without a reason is recorded by its status alone.
+        if (record.denialReason() != null && !record.denialReason().isBlank()) {
             line.put("denialReason", record.denialReason());
         }
         line.put("input", truncate(record.input(), properties.inputMaxChars()));
