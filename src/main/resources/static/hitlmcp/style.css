@@ -187,7 +187,7 @@ pre.error {
     align-items: stretch;
 }
 
-.reason {
+.reason, .updated-output {
     flex: 1;
     min-width: 0;
     padding: 6px 8px;
@@ -197,6 +197,12 @@ pre.error {
     border: 1px solid var(--border);
     border-radius: 4px;
     font: inherit;
+}
+
+.updated-output {
+    display: block;
+    width: 100%;
+    font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 .buttons {

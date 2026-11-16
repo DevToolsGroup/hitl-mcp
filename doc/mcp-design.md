@@ -13,6 +13,7 @@ Its distinguishing feature is that a human reviews every tool invocation twice:
 2. **After execution.**
    The user sees the result,
    and either lets it go back to the agent or withholds it with an optional reason.
+   When letting it go back, the user can replace the result with their own text.
 
 The goal is to give the user full control over what the agent is allowed to do
 and over what data the agent receives.
@@ -153,7 +154,9 @@ The decorator performs these steps for each invocation:
 4. Publish the result and block until the user decides on it.
    If the user denies it, return an error result to the agent:
    `Result withheld by user. Reason: ...`.
-5. Return the real result to the agent.
+5. If the user entered an updated output, return it to the agent instead of the real result.
+   This also applies when the tool failed: the agent receives the updated output, not the error.
+   Otherwise, return the real result to the agent.
 6. Append a record to the history file and remove the entry from the page.
 
 Blocking is done with a `CompletableFuture` per decision.
@@ -192,7 +195,10 @@ Browser to server:
 
 | Type | Payload | Meaning |
 |---|---|---|
-| `decision` | `id`, `phase`, `approved`, `reason` | The user pressed Accept or Deny |
+| `decision` | `id`, `phase`, `approved`, `reason`, `updatedOutput` | The user pressed Accept or Deny |
+
+`updatedOutput` is used only in the `AWAITING_RESULT_APPROVAL` phase and only when the result is accepted.
+A missing or blank `updatedOutput` means the real result goes back to the agent.
 
 ### User interface
 
@@ -202,6 +208,7 @@ A card contains:
 - the phase: "Call request" or "Result review";
 - the tool name and the time of the call;
 - the input arguments, pretty-printed, and the result once it is available;
+- in the result review, a "Reviewer updated output" text area for a replacement of the result;
 - a text area for the reason of denial;
 - the **Accept** and **Deny** buttons.
 
@@ -223,7 +230,8 @@ A record contains:
 - final status: `COMPLETED`, `FAILED`, `CALL_DENIED`, `RESULT_DENIED` or `CANCELLED`;
 - denial reason, if any;
 - input, truncated to Ni characters, and its full length;
-- output, truncated to No characters, and its full length.
+- output, truncated to No characters, and its full length;
+- updated output, if the user replaced the result, truncated to No characters, and its full length.
 
 The full lengths make it visible when a stored value was truncated.
 

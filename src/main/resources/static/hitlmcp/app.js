@@ -114,8 +114,10 @@ function renderCard(card, phaseChanged) {
     }
 
     const decidable = review.phase !== 'EXECUTING';
-    const reasonEl = el.querySelector('.reason');
-    if (phaseChanged) reasonEl.value = '';
+    if (phaseChanged) {
+        el.querySelector('.reason').value = '';
+        el.querySelector('.updated-output').value = '';
+    }
     el.querySelector('.controls').hidden = !decidable;
     setButtonsEnabled(el, decidable);
 }
@@ -131,6 +133,8 @@ function decide(card, approved) {
         phase: card.review.phase,
         approved,
         reason: card.el.querySelector('.reason').value,
+        // The server uses it only in the AWAITING_RESULT_APPROVAL phase; blank means "keep the tool's result".
+        updatedOutput: card.el.querySelector('.updated-output').value,
     }));
     // Wait for the server to confirm the transition; prevents double clicks.
     setButtonsEnabled(card.el, false);
