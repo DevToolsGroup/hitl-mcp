@@ -195,7 +195,7 @@ Browser to server:
 
 | Type | Payload | Meaning |
 |---|---|---|
-| `decision` | `id`, `phase`, `approved`, `reason`, `updatedResult` | The user pressed Accept or Deny |
+| `decision` | `id`, `phase`, `approved`, `reason`, `updatedResult` | The user pressed an accept or deny button |
 
 `updatedResult` is used only in the `AWAITING_RESULT_APPROVAL` phase and only when the result is accepted.
 A missing or blank `updatedResult` means the real result goes back to the agent.
@@ -209,9 +209,14 @@ A card contains:
 - the tool name and the time of the call;
 - the input arguments, pretty-printed, and the result once it is available;
 - in the result review, a "Reviewer updated result" text area for a replacement of the result;
-  while it is not empty, the **Accept** button reads **Accept updated result**;
 - a text area for the reason of denial;
-- the **Accept** and **Deny** buttons.
+- the accept and deny buttons, labelled by what they decide on:
+
+  | Phase | Accept button | Deny button |
+  |---|---|---|
+  | Call request | **Accept input** | **Deny input** |
+  | Result review | **Accept result** | **Deny result** |
+  | Result review, "Reviewer updated result" not empty | **Accept updated result** | **Deny result** |
 
 Inputs and outputs can be very long, so each text block on a card is paginated.
 A page shows at most N characters, where N is configurable.

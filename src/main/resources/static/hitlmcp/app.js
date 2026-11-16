@@ -96,7 +96,7 @@ function createCard(review) {
 
     el.querySelector('.accept').addEventListener('click', () => decide(card, true));
     el.querySelector('.deny').addEventListener('click', () => decide(card, false));
-    el.querySelector('.updated-result').addEventListener('input', () => updateAcceptLabel(el));
+    el.querySelector('.updated-result').addEventListener('input', () => updateButtonLabels(el));
     return card;
 }
 
@@ -118,8 +118,9 @@ function renderCard(card, phaseChanged) {
     if (phaseChanged) {
         el.querySelector('.reason').value = '';
         el.querySelector('.updated-result').value = '';
-        updateAcceptLabel(el);
     }
+    // On every render: a card may first arrive already in the result phase, e.g. after a page refresh.
+    updateButtonLabels(el);
     el.querySelector('.controls').hidden = !decidable;
     setButtonsEnabled(el, decidable);
 }
@@ -143,12 +144,16 @@ function decide(card, approved) {
 }
 
 /**
- * Tells the user which result the agent will get on Accept.
- * Blank text counts as empty, the same way the server treats it.
+ * Names what the buttons decide on: the input in the call phase, the result in the result phase.
+ * In the result phase, Accept tells the user whether the agent gets the tool's result or the updated one.
+ * Blank updated-result text counts as empty, the same way the server treats it.
  */
-function updateAcceptLabel(el) {
+function updateButtonLabels(el) {
+    const resultPhase = el.dataset.phase === 'AWAITING_RESULT_APPROVAL';
     const updated = el.querySelector('.updated-result').value.trim() !== '';
-    el.querySelector('.accept').textContent = updated ? 'Accept updated result' : 'Accept';
+    el.querySelector('.accept').textContent =
+        !resultPhase ? 'Accept input' : updated ? 'Accept updated result' : 'Accept result';
+    el.querySelector('.deny').textContent = resultPhase ? 'Deny result' : 'Deny input';
 }
 
 function setButtonsEnabled(el, enabled) {
