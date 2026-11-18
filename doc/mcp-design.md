@@ -64,10 +64,12 @@ They load the page into jsdom with a fake `WebSocket`,
 play the server by sending messages and the user by clicking and typing,
 and check the cards and the decisions the page sends.
 They use Node's built-in test runner; jsdom is the only dependency, used by the tests only.
-`mvn test` runs them through `frontend-maven-plugin`,
+They are off by default.
+`mvn test -DenableUiTests=true`, or `-Pui-tests`, runs them after the Java tests through `frontend-maven-plugin`,
 which unpacks a pinned Node version into `node/` and ignores any Node installed on the machine.
+In IntelliJ IDEA, tick the `ui-tests` profile in the Maven tool window.
 `-DskipTests` skips them too.
-To run only them: `PATH="$PWD/node:$PATH" npm test`, after one `mvn test` has installed Node.
+To run only them: `PATH="$PWD/node:$PATH" npm test`, after one such Maven run has installed Node.
 
 ## Architecture
 
