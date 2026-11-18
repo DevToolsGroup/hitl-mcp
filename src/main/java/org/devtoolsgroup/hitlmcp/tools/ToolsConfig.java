@@ -26,6 +26,7 @@ package org.devtoolsgroup.hitlmcp.tools;
 
 import org.devtoolsgroup.hitlmcp.HitlMcpTools;
 import org.devtoolsgroup.hitlmcp.history.HistoryWriter;
+import org.devtoolsgroup.hitlmcp.review.ReviewProperties;
 import org.devtoolsgroup.hitlmcp.review.ReviewRegistry;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
@@ -48,14 +49,15 @@ public class ToolsConfig {
      */
     @Bean
     public ToolCallbackProvider interceptedTools(ListableBeanFactory beanFactory, ReviewRegistry reviews,
-                                                 HistoryWriter historyWriter) {
+                                                 HistoryWriter historyWriter, ReviewProperties reviewProperties) {
         Object[] toolObjects = beanFactory.getBeansWithAnnotation(HitlMcpTools.class).values().toArray();
         ToolCallback[] tools = MethodToolCallbackProvider.builder()
                 .toolObjects(toolObjects)
                 .build()
                 .getToolCallbacks();
         return ToolCallbackProvider.from(Arrays.stream(tools)
-                .map(tool -> (ToolCallback) new InterceptingToolCallback(tool, reviews, historyWriter))
+                .map(tool -> (ToolCallback) new InterceptingToolCallback(tool, reviews, historyWriter,
+                        reviewProperties))
                 .toList());
     }
 }

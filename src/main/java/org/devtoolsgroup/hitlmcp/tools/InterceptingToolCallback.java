@@ -31,6 +31,7 @@ import org.devtoolsgroup.hitlmcp.review.Decision;
 import org.devtoolsgroup.hitlmcp.review.Review;
 import org.devtoolsgroup.hitlmcp.review.ReviewDeniedException;
 import org.devtoolsgroup.hitlmcp.review.ReviewInterruptedException;
+import org.devtoolsgroup.hitlmcp.review.ReviewProperties;
 import org.devtoolsgroup.hitlmcp.review.ReviewRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.model.ToolContext;
@@ -51,6 +52,7 @@ public class InterceptingToolCallback implements ToolCallback {
     private final ToolCallback delegate;
     private final ReviewRegistry reviews;
     private final HistoryWriter historyWriter;
+    private final ReviewProperties reviewProperties;
 
     @Override
     public ToolDefinition getToolDefinition() {
@@ -129,9 +131,10 @@ public class InterceptingToolCallback implements ToolCallback {
             }
             if (resultDecision.hasUpdatedResult()) {
                 // The reviewer's text replaces the tool output, also when the tool failed.
+                // The prefix tells the agent that the result was replaced; history keeps the reviewer's text only.
                 updatedResult = resultDecision.updatedResult();
                 status = Status.COMPLETED;
-                return updatedResult;
+                return reviewProperties.updatedResultPrefix() + updatedResult;
             }
             if (failure != null) {
                 status = Status.FAILED;

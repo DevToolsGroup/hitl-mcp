@@ -76,6 +76,7 @@ or with `HitlMcpServer.builder().property(name, value)`.
 |---|---|---|
 | `server.port` | `8080` | HTTP port, `0` picks a free one |
 | `hitlmcp.ui.page-size` | `2000` | Characters of an input or result shown on one page of a card |
+| `hitlmcp.review.updated-result-prefix` | `the result was modified by the reviewer: ` | Put before a result the reviewer replaced; empty for none |
 | `hitlmcp.history.file` | `log/call-history.jsonl` | History file |
 | `hitlmcp.history.input-max-chars` | `2000` | Characters of the input stored in history |
 | `hitlmcp.history.output-max-chars` | `2000` | Characters of the result stored in history |

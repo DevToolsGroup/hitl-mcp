@@ -156,6 +156,8 @@ The decorator performs these steps for each invocation:
    `Result withheld by user. Reason: ...`.
 5. If the user entered an updated result, return it to the agent instead of the real result.
    This also applies when the tool failed: the agent receives the updated result, not the error.
+   It is prefixed with `hitlmcp.review.updated-result-prefix`, so the agent knows the result was replaced.
+   The history stores the updated result without the prefix.
    Otherwise, return the real result to the agent.
 6. Append a record to the history file and remove the entry from the page.
 
@@ -290,6 +292,7 @@ A library cannot ship an `application.properties`, because the application's fil
 | `server.port` | `8080` | HTTP port |
 | `server.address` | `127.0.0.1` | Bind address, localhost only |
 | `hitlmcp.ui.page-size` | `2000` | N, characters per page in a card |
+| `hitlmcp.review.updated-result-prefix` | `the result was modified by the reviewer: ` | Put before a result the reviewer replaced, empty for none |
 | `hitlmcp.history.file` | `log/call-history.jsonl` | Path of the history file |
 | `hitlmcp.history.input-max-chars` | `2000` | Ni, max characters of input stored in history |
 | `hitlmcp.history.output-max-chars` | `2000` | No, max characters of output stored in history |
