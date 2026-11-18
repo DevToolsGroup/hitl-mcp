@@ -66,7 +66,7 @@ public final class HitlMcpServer implements AutoCloseable {
         return context.getEnvironment().getRequiredProperty("local.server.port", Integer.class);
     }
 
-    /** Stops the server. Calls still waiting for the user end with the {@code CANCELLED} status. */
+    /** Stops the server. */
     @Override
     public void close() {
         context.close();

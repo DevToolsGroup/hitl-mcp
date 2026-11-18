@@ -25,7 +25,7 @@ SOFTWARE.
 package org.devtoolsgroup.hitlmcp.review;
 
 /**
- * The thread of a tool call was interrupted while waiting for the user, e.g. on server shutdown.
+ * The thread of a tool call was interrupted while waiting for the user.
  */
 public class ReviewInterruptedException extends RuntimeException {
 

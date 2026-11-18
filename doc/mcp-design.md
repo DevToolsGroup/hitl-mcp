@@ -191,7 +191,6 @@ That makes duplicate clicks, or clicks from a second browser tab, harmless: the 
 
 The server does not detect that the agent cancelled a request or disconnected.
 Such a review stays on the page until the user decides on it; the answer then goes nowhere.
-If the server is stopped while a call is waiting, the call ends with the `CANCELLED` status.
 
 ### WebSocket protocol
 
