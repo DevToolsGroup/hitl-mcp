@@ -22,6 +22,11 @@
         <spring-ai.version>2.0.2</spring-ai.version>
         <!-- A library, not an application: keep the plain jar, skip Spring Boot's executable repackaging -->
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
+        <!-- UI tests, see frontend-maven-plugin below -->
+        <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
+        <node.version>v26.13.0</node.version>
+        <!-- Overridden by -DskipTests; also skips the UI tests -->
+        <skipTests>false</skipTests>
     </properties>
 
     <dependencyManagement>
@@ -70,6 +75,53 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+            <!--
+                Unit tests of the review page (src/test/js), run with Node's test runner and jsdom.
+                Node is downloaded once into ~/.m2 and unpacked into ./node, whatever Node the machine has.
+                -DskipTests skips them as well.
+            -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${frontend-maven-plugin.version}</version>
+                <configuration>
+                    <nodeVersion>${node.version}</nodeVersion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-node-and-npm</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipTests}</skip>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-ci</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>ci --no-audit --no-fund</arguments>
+                            <skip>${skipTests}</skip>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>test</arguments>
+                            <skip>${skipTests}</skip>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

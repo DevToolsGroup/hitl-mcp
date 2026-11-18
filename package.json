@@ -1,0 +1,12 @@
+{
+  "name": "hitl-mcp-server-ui-tests",
+  "private": true,
+  "description": "Unit tests of the review page in src/main/resources/static/mcp-review, run by Maven via frontend-maven-plugin",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"src/test/js/**/*.test.js\""
+  },
+  "devDependencies": {
+    "jsdom": "30.1.3"
+  }
+}

@@ -59,6 +59,16 @@ The files are served by Spring Boot from `src/main/resources/static/mcp-review/`
 A separate folder keeps them from clashing with the application's own static files.
 Only built-in browser APIs are used: `WebSocket`, `JSON` and the DOM.
 
+The page has unit tests in `src/test/js/`.
+They load the page into jsdom with a fake `WebSocket`,
+play the server by sending messages and the user by clicking and typing,
+and check the cards and the decisions the page sends.
+They use Node's built-in test runner; jsdom is the only dependency, used by the tests only.
+`mvn test` runs them through `frontend-maven-plugin`,
+which unpacks a pinned Node version into `node/` and ignores any Node installed on the machine.
+`-DskipTests` skips them too.
+To run only them: `PATH="$PWD/node:$PATH" npm test`, after one `mvn test` has installed Node.
+
 ## Architecture
 
 ```text
