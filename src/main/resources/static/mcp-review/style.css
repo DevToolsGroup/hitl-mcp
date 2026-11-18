@@ -139,6 +139,28 @@ h3 {
     text-transform: uppercase;
 }
 
+.block-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 4px;
+}
+
+.block-head h3 {
+    margin: 0;
+}
+
+.attribute {
+    min-width: 120px;
+    max-width: 50%;
+    padding: 2px 4px;
+    background: var(--code-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
 pre {
     margin: 0;
     padding: 8px;

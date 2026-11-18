@@ -89,6 +89,8 @@ function createCard(review) {
         inputPager: createPager(el.querySelector('.paged.input')),
         outputPager: createPager(el.querySelector('.paged.output')),
     };
+    card.inputView = createAttributeView(el.querySelector('.input-attribute'), card.inputPager);
+    card.outputView = createAttributeView(el.querySelector('.output-attribute'), card.outputPager);
 
     el.querySelector('.tool').textContent = review.tool;
     el.querySelector('.time').textContent = new Date(review.startedAt).toLocaleTimeString();
@@ -107,13 +109,13 @@ function renderCard(card, phaseChanged) {
     phaseEl.textContent = PHASE_LABELS[review.phase] ?? review.phase;
     el.dataset.phase = review.phase;
     // The server never changes the input of a call, but the dev mode does.
-    card.inputPager.setText(prettyJson(review.input));
+    card.inputView.setRaw(review.input);
 
     const hasOutput = review.phase === 'AWAITING_RESULT_APPROVAL';
     el.querySelector('.output-block').hidden = !hasOutput;
     if (hasOutput) {
         el.querySelector('.output-title').textContent = review.outputError ? 'Result (tool failed)' : 'Result';
-        card.outputPager.setText(prettyJson(review.output ?? ''));
+        card.outputView.setRaw(review.output ?? '');
         el.querySelector('.paged.output pre').classList.toggle('error', review.outputError);
     }
 
@@ -232,6 +234,60 @@ function createPager(blockEl) {
             render();
         },
     };
+}
+
+/**
+ * Shows a raw input or output text in a pager, optionally narrowed to one top-level attribute.
+ * When the text is a JSON object, the dropdown lists its top-level attribute names after an empty entry.
+ * The empty entry shows the whole text, pretty-printed.
+ * An attribute shows only its value: a string as plain text (pretty-printed if it is JSON itself),
+ * anything else as pretty-printed JSON.
+ * The dropdown is hidden when the text is not a JSON object.
+ */
+function createAttributeView(selectEl, pager) {
+    let raw = null;
+    let object = null;
+
+    function render() {
+        const attribute = selectEl.value;
+        if (object === null || attribute === '' || !Object.hasOwn(object, attribute)) {
+            pager.setText(prettyJson(raw));
+            return;
+        }
+        const value = object[attribute];
+        pager.setText(typeof value === 'string' ? prettyJson(value) : JSON.stringify(value, null, 2));
+    }
+
+    function rebuildOptions() {
+        const selected = selectEl.value;
+        const names = object === null ? [] : Object.keys(object);
+        selectEl.replaceChildren(new Option('', ''), ...names.map(name => new Option(name, name)));
+        // Keeps the selection when the attribute is still there, e.g. while the dev mode input is edited.
+        selectEl.value = names.includes(selected) ? selected : '';
+        selectEl.hidden = names.length === 0;
+    }
+
+    selectEl.addEventListener('change', render);
+
+    return {
+        setRaw(newRaw) {
+            if (newRaw === raw) return;
+            raw = newRaw;
+            object = parseJsonObject(raw);
+            rebuildOptions();
+            render();
+        },
+    };
+}
+
+/** Parses the text as a JSON object; returns null for other JSON values and for text that is not JSON. */
+function parseJsonObject(text) {
+    try {
+        const value = JSON.parse(text);
+        return value !== null && typeof value === 'object' && !Array.isArray(value) ? value : null;
+    } catch {
+        return null;
+    }
 }
 
 /**

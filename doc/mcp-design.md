@@ -218,6 +218,14 @@ A card contains:
   | Result review | **Accept result** | **Deny result** |
   | Result review, "Reviewer updated result" not empty | **Accept updated result** | **Deny result** |
 
+When the input or the result is a JSON object,
+a dropdown to the right of its label lists the top-level attribute names.
+The empty entry, selected initially, shows the whole JSON.
+Selecting an attribute shows only its value.
+A string value is shown as plain text, so line breaks and quotes are not escaped;
+if the string is itself JSON, it is pretty-printed.
+Other values are shown as pretty-printed JSON.
+
 Inputs and outputs can be very long, so each text block on a card is paginated.
 A page shows at most N characters, where N is configurable.
 N counts characters of the displayed text, that is, after JSON pretty-printing.
