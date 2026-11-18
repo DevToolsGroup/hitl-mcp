@@ -9,6 +9,8 @@ const PHASE_LABELS = {
 };
 const RECONNECT_DELAY_MS = 2000;
 const DEFAULT_PAGE_SIZE = 2000;
+/** Open the page with ?devmode=true to test the UI without a server; see {@link startDevMode}. */
+const DEV_MODE = new URLSearchParams(location.search).get('devmode') === 'true';
 
 const cardsEl = document.getElementById('cards');
 const emptyEl = document.getElementById('empty');
@@ -92,7 +94,6 @@ function createCard(review) {
     el.querySelector('.time').textContent = new Date(review.startedAt).toLocaleTimeString();
     el.querySelector('.id').textContent = review.id.slice(0, 8);
     el.querySelector('.id').title = review.id;
-    card.inputPager.setText(prettyJson(review.input));
 
     el.querySelector('.accept').addEventListener('click', () => decide(card, true));
     el.querySelector('.deny').addEventListener('click', () => decide(card, false));
@@ -105,6 +106,8 @@ function renderCard(card, phaseChanged) {
     const phaseEl = el.querySelector('.phase');
     phaseEl.textContent = PHASE_LABELS[review.phase] ?? review.phase;
     el.dataset.phase = review.phase;
+    // The server never changes the input of a call, but the dev mode does.
+    card.inputPager.setText(prettyJson(review.input));
 
     const hasOutput = review.phase === 'AWAITING_RESULT_APPROVAL';
     el.querySelector('.output-block').hidden = !hasOutput;
@@ -126,11 +129,7 @@ function renderCard(card, phaseChanged) {
 }
 
 function decide(card, approved) {
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
-        alert('Not connected to the server.');
-        return;
-    }
-    socket.send(JSON.stringify({
+    const message = JSON.stringify({
         type: 'decision',
         id: card.review.id,
         phase: card.review.phase,
@@ -138,7 +137,17 @@ function decide(card, approved) {
         reason: card.el.querySelector('.reason').value,
         // The server uses it only in the AWAITING_RESULT_APPROVAL phase; blank means "keep the tool's result".
         updatedResult: card.el.querySelector('.updated-result').value,
-    }));
+    });
+    if (DEV_MODE) {
+        // No server: show what would be sent and leave the card as it is.
+        console.log('[devmode] would send:', message);
+        return;
+    }
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        alert('Not connected to the server.');
+        return;
+    }
+    socket.send(message);
     // Wait for the server to confirm the transition; prevents double clicks.
     setButtonsEnabled(card.el, false);
 }
@@ -252,4 +261,55 @@ function prettyJson(text) {
     }
 }
 
-connect();
+/**
+ * Dev mode: no WebSocket. The test panel drives a single fake card through the same code
+ * that handles server messages, so the card looks exactly as it would for a real call:
+ * - empty "test input": no card;
+ * - "executing" checked: the call is being executed;
+ * - non-empty "test output": the result waits for approval;
+ * - otherwise: the call waits for approval.
+ */
+function startDevMode() {
+    const DEV_ID = 'devmode-00000000-0000-0000-0000-000000000000';
+    const inputEl = document.getElementById('dev-input');
+    const outputEl = document.getElementById('dev-output');
+    const executingEl = document.getElementById('dev-executing');
+    let startedAt = null;
+
+    function update() {
+        const input = inputEl.value;
+        if (input === '') {
+            startedAt = null;
+            handleMessage({ type: 'remove', id: DEV_ID });
+            return;
+        }
+        startedAt ??= new Date().toISOString();
+        const output = outputEl.value;
+        const phase = executingEl.checked ? 'EXECUTING'
+            : output !== '' ? 'AWAITING_RESULT_APPROVAL'
+            : 'AWAITING_CALL_APPROVAL';
+        handleMessage({
+            type: 'upsert',
+            review: {
+                id: DEV_ID,
+                tool: 'dev_tool',
+                input,
+                phase,
+                startedAt,
+                output: phase === 'AWAITING_RESULT_APPROVAL' ? output : null,
+                outputError: false,
+            },
+        });
+    }
+
+    document.getElementById('dev-panel').hidden = false;
+    connectionEl.textContent = 'dev mode, no server';
+    [inputEl, outputEl, executingEl].forEach(el => el.addEventListener('input', update));
+    update();
+}
+
+if (DEV_MODE) {
+    startDevMode();
+} else {
+    connect();
+}

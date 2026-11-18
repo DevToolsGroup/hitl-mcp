@@ -12,6 +12,22 @@
     <span id="connection" class="connection offline">connecting…</span>
 </header>
 
+<!-- Shown only with ?devmode=true in the URL: drives one fake card without a server. -->
+<section id="dev-panel" class="dev-panel" hidden>
+    <label>
+        Test input
+        <textarea id="dev-input" rows="3" placeholder="Tool input; non-empty text creates the card"></textarea>
+    </label>
+    <label>
+        Test output
+        <textarea id="dev-output" rows="3" placeholder="Tool output; non-empty text moves the card to result review"></textarea>
+    </label>
+    <label class="dev-executing">
+        <input type="checkbox" id="dev-executing">
+        Executing
+    </label>
+</section>
+
 <main>
     <p id="empty" class="empty">No pending calls.</p>
     <div id="cards"></div>

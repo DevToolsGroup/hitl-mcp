@@ -227,6 +227,18 @@ They are hidden when the text fits on one page.
 
 The page reconnects automatically if the WebSocket connection is lost.
 
+For quick UI testing, open the page with `?devmode=true` in the URL.
+In dev mode the page does not connect to the server.
+Instead, a test panel at the top drives one fake card:
+
+- non-empty "Test input" creates the card in the call request phase, with that text as the input;
+- non-empty "Test output" moves it to the result review, with that text as the result;
+- the "Executing" checkbox moves it to the executing phase, whatever the output;
+- clearing "Test input" removes the card.
+
+The buttons do not change the card;
+the decision message that would be sent to the server is printed to the browser console.
+
 ### History file
 
 Every finished invocation is appended to a file in the JSON Lines format, one JSON object per line.
