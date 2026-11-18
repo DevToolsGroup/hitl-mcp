@@ -69,6 +69,36 @@ public class InterceptingToolCallback implements ToolCallback {
 
     @Override
     public String call(String toolInput, ToolContext toolContext) {
+        String result = null;
+        RuntimeException error = null;
+        try {
+            result = reviewedCall(toolInput, toolContext);
+        } catch (RuntimeException e) {
+            error = e;
+        }
+        return returnToAgent(result, error);
+    }
+
+    /**
+     * The only place that calls the real tool, so a breakpoint here shows exactly what the tool receives.
+     * If it is not hit, the tool was not called.
+     */
+    private String callDelegate(String toolInput, ToolContext toolContext) {
+        return toolContext == null ? delegate.call(toolInput) : delegate.call(toolInput, toolContext);
+    }
+
+    /**
+     * The only exit of {@link #call(String, ToolContext)}, so a breakpoint here shows exactly what the agent gets:
+     * either the result or the exception, which the MCP server reports to the agent as a tool error.
+     */
+    private static String returnToAgent(String result, RuntimeException error) {
+        if (error != null) {
+            throw error;
+        }
+        return result;
+    }
+
+    private String reviewedCall(String toolInput, ToolContext toolContext) {
         Review review = reviews.create(delegate.getToolDefinition().name(), toolInput);
         Status status = Status.CANCELLED;
         String output = null;
@@ -85,7 +115,7 @@ public class InterceptingToolCallback implements ToolCallback {
             reviews.startExecution(review);
             RuntimeException failure = null;
             try {
-                output = toolContext == null ? delegate.call(toolInput) : delegate.call(toolInput, toolContext);
+                output = callDelegate(toolInput, toolContext);
             } catch (RuntimeException e) {
                 failure = e;
                 output = String.valueOf(e.getMessage());
