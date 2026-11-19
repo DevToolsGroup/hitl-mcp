@@ -185,6 +185,15 @@ h3 {
     font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+.copy {
+    min-width: 72px;
+    padding: 2px 8px;
+    background: var(--code-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-size: 12px;
+}
+
 pre {
     margin: 0;
     padding: 8px;

@@ -107,7 +107,7 @@ export function openPage({ query = '', origin = 'http://localhost:8080' } = {}) 
                     (this.listeners[type] ?? []).forEach(listener => listener(event));
                 }
             };
-            // The page only uses timers to reconnect; tests run them explicitly.
+            // The page uses timers to reconnect and to reset the "Copied" label; tests run them explicitly.
             window.setTimeout = (callback, delay) => timers.push({ callback, delay });
             window.alert = message => alerts.push(message);
         },

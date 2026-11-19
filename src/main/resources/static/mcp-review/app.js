@@ -33,6 +33,8 @@ const PHASE_LABELS = {
 };
 const RECONNECT_DELAY_MS = 2000;
 const DEFAULT_PAGE_SIZE = 2000;
+/** How long a "Copy" button reads "Copied" after a successful copy. */
+const COPIED_LABEL_MS = 5000;
 /** Open the page with ?devmode=true to test the UI without a server; see {@link startDevMode}. */
 const DEV_MODE = new URLSearchParams(location.search).get('devmode') === 'true';
 
@@ -121,6 +123,8 @@ function createCard(review) {
     el.querySelector('.id').textContent = review.id.slice(0, 8);
     el.querySelector('.id').title = review.id;
 
+    el.querySelectorAll('.copy').forEach(createCopyButton);
+
     el.querySelector('.accept').addEventListener('click', () => decide(card, true));
     el.querySelector('.deny').addEventListener('click', () => decide(card, false));
     el.querySelector('.updated-result').addEventListener('input', () => updateButtonLabels(el));
@@ -208,6 +212,53 @@ function updateSummary() {
     const waiting = [...cards.values()].filter(card => card.review.phase !== 'EXECUTING').length;
     emptyEl.hidden = cards.size > 0;
     document.title = waiting > 0 ? `(${waiting}) HITL MCP` : 'HITL MCP';
+}
+
+/**
+ * Makes a "Copy" button copy the text currently shown in the block below its header:
+ * only the current page, narrowed to the selected attribute.
+ * Once the text is copied, the button reads "Copied" for {@link COPIED_LABEL_MS}.
+ */
+function createCopyButton(buttonEl) {
+    const preEl = buttonEl.closest('.block-head').nextElementSibling.querySelector('pre');
+    let resetTimer = null;
+
+    buttonEl.addEventListener('click', async () => {
+        if (!await copyText(preEl.textContent)) return;
+        buttonEl.textContent = 'Copied';
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(() => buttonEl.textContent = 'Copy', COPIED_LABEL_MS);
+    });
+}
+
+/**
+ * Copies the text to the clipboard; returns whether it was copied.
+ * The Clipboard API exists only in secure contexts (https or localhost),
+ * so over plain http the text is copied through a temporary hidden textarea.
+ */
+async function copyText(text) {
+    if (navigator.clipboard?.writeText) {
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } catch {
+            // Denied or unavailable: try the fallback.
+        }
+    }
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        return document.execCommand('copy');
+    } catch {
+        return false;
+    } finally {
+        textarea.remove();
+    }
 }
 
 /**
