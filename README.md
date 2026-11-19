@@ -114,7 +114,7 @@ Then add the dependency:
 <dependency>
     <groupId>org.devtoolsgroup</groupId>
     <artifactId>hitl-mcp-server</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.5-SNAPSHOT</version>
 </dependency>
 ```
 
