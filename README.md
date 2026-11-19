@@ -58,12 +58,30 @@ public class CalculatorTools {
 
 On startup the server prints its URLs.
 Open the review page at `http://127.0.0.1:8080/mcp-review/`
-and point your agent at `http://127.0.0.1:8080/mcp`.
+and point your agent at `http://127.0.0.1:8080/mcp`, as described in [Connecting an AI agent](#connecting-an-ai-agent).
 
 Each call the agent makes now appears as a card on the page and waits for your decision.
 
 In a Spring Boot application you don't need the builder.
 Add the dependency, and the auto-configuration finds the `@HitlMcpTools` classes through component scan.
+
+## Connecting an AI agent
+
+A tool call returns only after you have decided on it, and a review can take a long time.
+If the server is registered in the agent's configuration the usual way,
+the agent's built-in MCP client may give up waiting before you decide, and the call fails with a timeout.
+The preferred way is to ask the agent not to register the server,
+but to send requests to it with `curl` or with a small script it writes, for example in Python.
+That way the agent controls how long it waits for an answer.
+An example prompt for the agent:
+
+```text
+An MCP server runs at http://127.0.0.1:8080/mcp.
+A human reviews every tool call it receives, so an answer may take a long time.
+Don't register it as an MCP server.
+Instead, write a small script that connects to it and calls its tools,
+and choose how long to wait for an answer based on the task.
+```
 
 ## Configuration
 

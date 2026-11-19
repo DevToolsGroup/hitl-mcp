@@ -323,8 +323,18 @@ The URLs show the real address, port (also when picked at random with port `0`),
 servlet context path and MCP endpoint.
 They are written with `System.out`, so they are visible whatever logging configuration the application has.
 
-Registering the server with Claude Code:
+A tool call returns only after the reviewer has decided on it, and a review can take a long time.
+If the server is registered in the agent's configuration the usual way,
+the agent's built-in MCP client may give up waiting before the reviewer decides, and the call fails with a timeout.
+The preferred way is to ask the agent not to register the server,
+but to send requests to it with `curl` or with a small script it writes, for example in Python.
+That way the agent controls how long it waits for an answer.
+An example prompt for the agent:
 
-```bash
-claude mcp add --transport http hitl-mcp http://127.0.0.1:8080/mcp
+```text
+An MCP server runs at http://127.0.0.1:8080/mcp.
+A human reviews every tool call it receives, so an answer may take a long time.
+Don't register it as an MCP server.
+Instead, write a small script that connects to it and calls its tools,
+and choose how long to wait for an answer based on the task.
 ```
