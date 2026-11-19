@@ -13,7 +13,7 @@
 
     <groupId>org.devtoolsgroup</groupId>
     <artifactId>hitl-mcp-server</artifactId>
-    <version>0.0.5-SNAPSHOT</version>
+    <version>0.0.6-SNAPSHOT</version>
     <name>hitl-mcp-server</name>
     <description>Library for MCP servers where a human reviews every tool call and its result</description>
 
