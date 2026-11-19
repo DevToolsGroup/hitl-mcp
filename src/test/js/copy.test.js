@@ -27,7 +27,7 @@ SOFTWARE.
 
 import { afterEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { openPage, review } from './page.js';
+import { openPage, review, shownText } from './page.js';
 
 let page;
 
@@ -74,7 +74,18 @@ describe('copy button', () => {
         }
     });
 
-    it('copies only the visible page of the selected attribute', async () => {
+    it('copies all pages, not only the visible one', async () => {
+        const copied = openWithClipboard();
+        page.connect([review({ input: LONG })], 10);
+        page.card().querySelector('.paged.input .next').click();
+
+        await click(copyButton(page.card(), 'input'));
+
+        assert.equal(shownText(page.card(), 'input'), 'b'.repeat(10));
+        assert.deepEqual(copied, [LONG]);
+    });
+
+    it('copies all pages of the selected attribute', async () => {
         const copied = openWithClipboard();
         page.connect([review({ input: JSON.stringify({ query: LONG, limit: 1 }) })], 10);
         page.choose(page.card().querySelector('.input-attribute'), 'query');
@@ -82,7 +93,7 @@ describe('copy button', () => {
 
         await click(copyButton(page.card(), 'input'));
 
-        assert.deepEqual(copied, ['b'.repeat(10)]);
+        assert.deepEqual(copied, [LONG]);
     });
 
     it('copies the result', async () => {
@@ -94,7 +105,7 @@ describe('copy button', () => {
         assert.deepEqual(copied, ['done']);
     });
 
-    it('reads "Copied" for 5 seconds after a copy', async () => {
+    it('reads "Copied" for 2 seconds after a copy', async () => {
         openWithClipboard();
         page.connect([review()]);
         const button = copyButton(page.card(), 'input');
@@ -103,7 +114,7 @@ describe('copy button', () => {
 
         assert.equal(button.textContent, 'Copied');
         const timer = page.timers.at(-1);
-        assert.equal(timer.delay, 5000);
+        assert.equal(timer.delay, 2000);
         timer.callback();
         assert.equal(button.textContent, 'Copy');
     });

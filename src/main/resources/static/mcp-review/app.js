@@ -123,7 +123,8 @@ function createCard(review) {
     el.querySelector('.id').textContent = review.id.slice(0, 8);
     el.querySelector('.id').title = review.id;
 
-    el.querySelectorAll('.copy').forEach(createCopyButton);
+    createCopyButton(el.querySelector('.input-copy'), card.inputPager);
+    createCopyButton(el.querySelector('.output-copy'), card.outputPager);
 
     el.querySelector('.accept').addEventListener('click', () => decide(card, true));
     el.querySelector('.deny').addEventListener('click', () => decide(card, false));
@@ -215,16 +216,14 @@ function updateSummary() {
 }
 
 /**
- * Makes a "Copy" button copy the text currently shown in the block below its header:
- * only the current page, narrowed to the selected attribute.
+ * Makes a "Copy" button copy the whole text of a pager: all pages, narrowed to the selected attribute.
  * Once the text is copied, the button reads "Copied" for {@link COPIED_LABEL_MS}.
  */
-function createCopyButton(buttonEl) {
-    const preEl = buttonEl.closest('.block-head').nextElementSibling.querySelector('pre');
+function createCopyButton(buttonEl, pager) {
     let resetTimer = null;
 
     buttonEl.addEventListener('click', async () => {
-        if (!await copyText(preEl.textContent)) return;
+        if (!await copyText(pager.text())) return;
         buttonEl.textContent = 'Copied';
         clearTimeout(resetTimer);
         resetTimer = setTimeout(() => buttonEl.textContent = 'Copy', COPIED_LABEL_MS);
@@ -295,6 +294,10 @@ function createPager(blockEl) {
     });
 
     return {
+        /** The whole text, from all pages. */
+        text() {
+            return text;
+        },
         /** Sets the text; stays on the current page if the text did not change. */
         setText(newText) {
             if (newText === text && preEl.textContent !== '') return;
