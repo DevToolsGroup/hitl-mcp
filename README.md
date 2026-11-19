@@ -26,8 +26,6 @@ The tools themselves know nothing about reviews.
 - **Parallel calls.** Several calls can wait at once, and the reviewer decides on them in any order.
 - **Long texts.** Large inputs and results are paginated on the review page.
 - **History.** Every finished call is appended to a JSON Lines file, with its status, input and result.
-- **Safe by default.** The server listens on `127.0.0.1` only, checks the `Origin` header,
-  and refuses to start if any tool would be published without review.
 - **Two ways to start.** It works as a dependency of a Spring Boot application or from a plain `main` method.
 
 ## A minimal example
@@ -75,11 +73,11 @@ or with `HitlMcpServer.builder().property(name, value)`.
 | Property | Default | Meaning |
 |---|---|---|
 | `server.port` | `8080` | HTTP port, `0` picks a free one |
-| `hitlmcp.ui.page-size` | `2000` | Characters of an input or result shown on one page of a card |
+| `hitlmcp.ui.page-size` | `100000` | Characters of an input or result shown on one page of a card |
 | `hitlmcp.review.updated-result-prefix` | `the result was modified by the reviewer: ` | Put before a result the reviewer replaced; empty for none |
 | `hitlmcp.history.file` | `log/call-history.jsonl` | History file |
-| `hitlmcp.history.input-max-chars` | `2000` | Characters of the input stored in history |
-| `hitlmcp.history.output-max-chars` | `2000` | Characters of the result stored in history |
+| `hitlmcp.history.input-max-chars` | `100000` | Characters of the input stored in history |
+| `hitlmcp.history.output-max-chars` | `100000` | Characters of the result stored in history |
 
 ## Learn more
 
