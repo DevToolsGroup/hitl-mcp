@@ -34,7 +34,7 @@ const PHASE_LABELS = {
 const RECONNECT_DELAY_MS = 2000;
 const DEFAULT_PAGE_SIZE = 2000;
 /** How long a "Copy" button reads "Copied" after a successful copy. */
-const COPIED_LABEL_MS = 5000;
+const COPIED_LABEL_MS = 2000;
 /** Open the page with ?devmode=true to test the UI without a server; see {@link startDevMode}. */
 const DEV_MODE = new URLSearchParams(location.search).get('devmode') === 'true';
 
