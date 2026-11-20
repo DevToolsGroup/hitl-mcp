@@ -27,8 +27,8 @@ The page receives updates from the server over a WebSocket.
 - Reachable from localhost only.
 - Several tool invocations may run in parallel.
   The user sees all of them at once and can decide on any of them in any order.
-- A pending invocation waits for the user forever, there is no timeout.
-- The library contains no tools of its own, the applications using it provide them.
+- A pending invocation waits for the user forever; there is no timeout.
+- The library contains no tools of its own; the applications using it provide them.
   The approval mechanism does not depend on the tools.
 - The examples in `src/test` have simple demo tools: adding and multiplying numbers,
   and generating random text of a given length (useful for trying out long outputs).
@@ -95,7 +95,7 @@ To run only them: `PATH="$PWD/node:$PATH" npm test`, after one such Maven run ha
 The library is a Spring Boot auto-configuration, so it works the same way in two kinds of applications.
 
 Tools are Spring AI `@Tool` methods.
-Only classes annotated with `@HitlMcpTools` are published, `@Tool` methods of other classes are ignored.
+Only classes annotated with `@HitlMcpTools` are published; `@Tool` methods of other classes are ignored.
 `@HitlMcpTools` is also a Spring `@Component`.
 
 ```java
@@ -138,7 +138,7 @@ Things to know when using the library:
 - A plain Java application gets Spring Boot, Tomcat and Jackson as transitive dependencies.
 
 The library is installed into the local Maven repository with `mvn install`
-and used as the dependency `org.devtoolsgroup:hitl-mcp-server:0.1.0-SNAPSHOT`.
+and used as the dependency `org.devtoolsgroup:hitl-mcp-server:0.0.6-SNAPSHOT`.
 
 The examples in `src/test/java/org/devtoolsgroup/hitlmcp/example/` show both kinds of applications:
 
@@ -171,7 +171,8 @@ The decorator performs these steps for each invocation:
    It is prefixed with `hitlmcp.review.updated-result-prefix`, so the agent knows the result was replaced.
    The history stores the updated result without the prefix.
    Otherwise, return the real result to the agent.
-6. Append a record to the history file and remove the entry from the page.
+6. In every case, also after a denial or an error, remove the entry from the page
+   and append a record to the history file.
 
 Blocking is done with a `CompletableFuture` per decision.
 Each MCP request runs on its own thread, so parallel invocations do not block each other.
@@ -213,7 +214,7 @@ Browser to server:
 `updatedResult` is used only in the `AWAITING_RESULT_APPROVAL` phase and only when the result is accepted.
 A missing or blank `updatedResult` means the real result goes back to the agent.
 
-A message from the browser may be at most M characters long, JSON-encoded,
+A message from the browser, JSON-encoded, may be at most M characters long,
 so M also limits the length of an updated result.
 The servlet container enforces the limit:
 a longer message closes the connection with code 1009 ("message too big"), and the decision is lost.
@@ -228,11 +229,11 @@ If the connection is closed with code 1009 anyway, the page tells the user too.
 The page shows one card per pending invocation.
 A card contains:
 
-- the phase: "Call request" or "Result review";
+- the phase: "Call request", "Executing…" or "Result review";
 - the tool name and the time of the call;
 - the input arguments, pretty-printed, and the result once it is available;
 - in the result review, a "Reviewer updated result" text area for a replacement of the result;
-- a text area for the reason of denial;
+- a text area for the reason for denial;
 - the accept and deny buttons, labelled by what they decide on:
 
   | Phase | Accept button | Deny button |
@@ -295,7 +296,7 @@ The full lengths make it visible when a stored value was truncated.
   Tools of MCP servers the application is a client of are ignored,
   unless `spring.ai.mcp.server.expose-mcp-client-tools=true` makes Spring AI publish them.
 - The `Origin` header is checked on `/mcp` and `/mcp-review/ws`.
-  Only `http://localhost:<port>` and `http://127.0.0.1:<port>` are allowed,
+  Only origins on `localhost`, `127.0.0.1` or `[::1]` are allowed,
   or no `Origin` at all for non-browser clients.
   This protects against DNS rebinding attacks from web pages opened in the same browser,
   as recommended by the MCP specification.
@@ -312,12 +313,12 @@ A library cannot ship an `application.properties`, because the application's fil
 |---|---|---|
 | `server.port` | `8080` | HTTP port |
 | `server.address` | `127.0.0.1` | Bind address, localhost only |
-| `hitlmcp.ui.page-size` | `2000` | N, characters per page in a card |
+| `hitlmcp.ui.page-size` | `100000` | N, characters per page in a card |
 | `hitlmcp.ui.max-message-chars` | `2000000` | M, max characters of a message from the review page |
 | `hitlmcp.review.updated-result-prefix` | `the result was modified by the reviewer: ` | Put before a result the reviewer replaced, empty for none |
 | `hitlmcp.history.file` | `log/call-history.jsonl` | Path of the history file |
-| `hitlmcp.history.input-max-chars` | `2000` | Ni, max characters of input stored in history |
-| `hitlmcp.history.output-max-chars` | `2000` | No, max characters of output stored in history |
+| `hitlmcp.history.input-max-chars` | `100000` | Ni, max characters of input stored in history |
+| `hitlmcp.history.output-max-chars` | `100000` | No, max characters of output stored in history |
 
 ## Connecting an AI agent
 
