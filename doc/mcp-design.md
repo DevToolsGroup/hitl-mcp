@@ -138,7 +138,7 @@ Things to know when using the library:
 - A plain Java application gets Spring Boot, Tomcat and Jackson as transitive dependencies.
 
 The library is installed into the local Maven repository with `mvn install`
-and used as the dependency `org.devtoolsgroup:hitl-mcp-server:0.0.6-SNAPSHOT`.
+and used as the dependency `org.devtoolsgroup:hitl-mcp-server:0.0.6`.
 
 The examples in `src/test/java/org/devtoolsgroup/hitlmcp/example/` show both kinds of applications:
 
