@@ -46,6 +46,7 @@ class HitlMcpDefaultsEnvironmentPostProcessorTest {
 
         assertThat(environment.getProperty("server.address")).isEqualTo("127.0.0.1");
         assertThat(environment.getProperty("hitlmcp.ui.page-size", Integer.class)).isEqualTo(100000);
+        assertThat(environment.getProperty("hitlmcp.ui.max-message-chars", Integer.class)).isEqualTo(2000000);
         assertThat(environment.getProperty("hitlmcp.history.file")).isEqualTo("log/call-history.jsonl");
         assertThat(environment.getProperty("spring.ai.mcp.server.annotation-scanner.enabled", Boolean.class))
                 .as("@McpTool methods would bypass the review").isFalse();

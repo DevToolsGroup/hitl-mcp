@@ -33,6 +33,8 @@ const PHASE_LABELS = {
 };
 const RECONNECT_DELAY_MS = 2000;
 const DEFAULT_PAGE_SIZE = 2000;
+/** WebSocket close code: the server closed the connection because a message was too big. */
+const CLOSE_MESSAGE_TOO_BIG = 1009;
 /** How long a "Copy" button reads "Copied" after a successful copy. */
 const COPIED_LABEL_MS = 2000;
 /** Open the page with ?devmode=true to test the UI without a server; see {@link startDevMode}. */
@@ -48,6 +50,11 @@ const cards = new Map();
 let socket = null;
 /** Characters per page; the server sends the configured value (app.ui.page-size) in the snapshot. */
 let pageSize = DEFAULT_PAGE_SIZE;
+/**
+ * The longest message the server accepts, in characters (hitlmcp.ui.max-message-chars), from the snapshot.
+ * Null until the snapshot arrives, and with a server that does not send it.
+ */
+let maxMessageChars = null;
 
 function connect() {
     // Relative to the page, so it also works when the application has a servlet context path
@@ -56,8 +63,14 @@ function connect() {
     socket = new WebSocket(url);
 
     socket.addEventListener('open', () => setConnected(true));
-    socket.addEventListener('close', () => {
+    socket.addEventListener('close', event => {
         setConnected(false);
+        if (event.code === CLOSE_MESSAGE_TOO_BIG) {
+            // Normally caught before sending, see decide(); this is the fallback, e.g. for a lower container limit.
+            // After reconnecting the card is shown again in the same phase, with the buttons enabled.
+            alert('The server rejected the decision because it is too long, so it was not applied. '
+                + 'Shorten the updated result or the reason and try again.');
+        }
         setTimeout(connect, RECONNECT_DELAY_MS);
     });
     socket.addEventListener('message', event => handleMessage(JSON.parse(event.data)));
@@ -77,6 +90,9 @@ function handleMessage(message) {
                     card.inputPager.repaginate();
                     card.outputPager.repaginate();
                 });
+            }
+            if (message.maxMessageChars > 0) {
+                maxMessageChars = message.maxMessageChars;
             }
             const ids = new Set(message.reviews.map(review => review.id));
             for (const id of [...cards.keys()]) {
@@ -176,6 +192,14 @@ function decide(card, approved) {
     }
     if (!socket || socket.readyState !== WebSocket.OPEN) {
         alert('Not connected to the server.');
+        return;
+    }
+    // The server would close the connection instead of applying the decision, so it is not sent at all.
+    // Both lengths are in UTF-16 code units, which is how the server counts characters too.
+    if (maxMessageChars !== null && message.length > maxMessageChars) {
+        alert(`The decision is too long to send: ${message.length} characters, `
+            + `the server accepts at most ${maxMessageChars} (hitlmcp.ui.max-message-chars). `
+            + 'Shorten the updated result or the reason.');
         return;
     }
     socket.send(message);

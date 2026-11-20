@@ -64,7 +64,7 @@ class ReviewWebSocketHandlerTest {
     private final ReviewRegistry registry = mock(ReviewRegistry.class);
     private final JsonMapper jsonMapper = JsonMapper.builder().build();
     private final ReviewWebSocketHandler handler = new ReviewWebSocketHandler(registry, jsonMapper,
-            new UiProperties(123));
+            new UiProperties(123, 4567));
 
     @BeforeEach
     void setUp() {
@@ -100,11 +100,21 @@ class ReviewWebSocketHandlerTest {
         JsonNode snapshot = sent(session, 1).getFirst();
         assertThat(snapshot.get("type").asString()).isEqualTo("snapshot");
         assertThat(snapshot.get("pageSize").asInt()).isEqualTo(123);
+        assertThat(snapshot.get("maxMessageChars").asInt()).isEqualTo(4567);
         JsonNode review = snapshot.get("reviews").get(0);
         assertThat(review.get("id").asString()).isEqualTo("r1");
         assertThat(review.get("tool").asString()).isEqualTo("sql");
         assertThat(review.get("phase").asString()).isEqualTo("AWAITING_CALL_APPROVAL");
         assertThat(review.get("outputError").asBoolean()).isFalse();
+    }
+
+    @Test
+    void raisesTheIncomingMessageSizeLimitOnConnect() {
+        WebSocketSession session = session("s1");
+
+        handler.afterConnectionEstablished(session);
+
+        verify(session).setTextMessageSizeLimit(4567);
     }
 
     @Test

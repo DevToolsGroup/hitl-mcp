@@ -67,10 +67,15 @@ public class ReviewWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
+        // A decision with a long updated result is a big message. Above the limit the container closes the
+        // connection (1009, message too big) and the decision is lost; Tomcat's default limit is only 8192.
+        // Set per session, so the application's other WebSocket endpoints keep their own limits.
+        session.setTextMessageSizeLimit(uiProperties.maxMessageChars());
         // The decorator makes sending thread-safe; broadcasts come from many tool-call threads.
         WebSocketSession safe = new ConcurrentWebSocketSessionDecorator(session, SEND_TIME_LIMIT_MS, BUFFER_SIZE_LIMIT);
         sessions.put(session.getId(), safe);
-        send(safe, Map.of("type", "snapshot", "pageSize", uiProperties.pageSize(), "reviews", registry.snapshot()));
+        send(safe, Map.of("type", "snapshot", "pageSize", uiProperties.pageSize(),
+                "maxMessageChars", uiProperties.maxMessageChars(), "reviews", registry.snapshot()));
     }
 
     @Override

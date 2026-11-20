@@ -200,7 +200,7 @@ Server to browser:
 
 | Type | Payload | Meaning |
 |---|---|---|
-| `snapshot` | list of reviews, page size N | Sent on connect, so a page refresh or a late connection loses nothing |
+| `snapshot` | list of reviews, page size N, `maxMessageChars` M | Sent on connect, so a page refresh or a late connection loses nothing |
 | `upsert` | one review | A review was created or changed its phase |
 | `remove` | review id | A review is finished |
 
@@ -212,6 +212,16 @@ Browser to server:
 
 `updatedResult` is used only in the `AWAITING_RESULT_APPROVAL` phase and only when the result is accepted.
 A missing or blank `updatedResult` means the real result goes back to the agent.
+
+A message from the browser may be at most M characters long, JSON-encoded,
+so M also limits the length of an updated result.
+The servlet container enforces the limit:
+a longer message closes the connection with code 1009 ("message too big"), and the decision is lost.
+Tomcat's own default is only 8192 characters, so the handler sets M on each review page session.
+Other WebSocket endpoints of the application keep their own limits.
+The container may reserve a buffer of M characters for each open review page.
+The page checks the length before sending and tells the user, instead of sending a decision the server would reject.
+If the connection is closed with code 1009 anyway, the page tells the user too.
 
 ### User interface
 
@@ -303,6 +313,7 @@ A library cannot ship an `application.properties`, because the application's fil
 | `server.port` | `8080` | HTTP port |
 | `server.address` | `127.0.0.1` | Bind address, localhost only |
 | `hitlmcp.ui.page-size` | `2000` | N, characters per page in a card |
+| `hitlmcp.ui.max-message-chars` | `2000000` | M, max characters of a message from the review page |
 | `hitlmcp.review.updated-result-prefix` | `the result was modified by the reviewer: ` | Put before a result the reviewer replaced, empty for none |
 | `hitlmcp.history.file` | `log/call-history.jsonl` | Path of the history file |
 | `hitlmcp.history.input-max-chars` | `2000` | Ni, max characters of input stored in history |

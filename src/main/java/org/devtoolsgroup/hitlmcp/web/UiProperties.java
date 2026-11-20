@@ -27,14 +27,23 @@ package org.devtoolsgroup.hitlmcp.web;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * @param pageSize how many characters of an input or output are shown on one page of a card
+ * @param pageSize        how many characters of an input or output are shown on one page of a card
+ * @param maxMessageChars the longest message, in characters, the review page may send to the server.
+ *                        A decision carries the updated result and the reason, JSON-encoded,
+ *                        so this limits how long an updated result can be.
+ *                        Without it the servlet container's default applies, 8192 characters in Tomcat.
+ *                        The container may reserve a buffer of this size for each open review page.
  */
 @ConfigurationProperties("hitlmcp.ui")
-public record UiProperties(int pageSize) {
+public record UiProperties(int pageSize, int maxMessageChars) {
 
     public UiProperties {
         if (pageSize <= 0) {
             throw new IllegalArgumentException("hitlmcp.ui.page-size must be positive, got " + pageSize);
+        }
+        if (maxMessageChars <= 0) {
+            throw new IllegalArgumentException(
+                    "hitlmcp.ui.max-message-chars must be positive, got " + maxMessageChars);
         }
     }
 }

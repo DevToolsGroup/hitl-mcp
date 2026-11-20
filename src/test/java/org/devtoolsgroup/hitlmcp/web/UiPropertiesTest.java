@@ -34,15 +34,26 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class UiPropertiesTest {
 
     @Test
-    void acceptsPositivePageSize() {
-        assertThat(new UiProperties(1).pageSize()).isEqualTo(1);
+    void acceptsPositiveValues() {
+        UiProperties properties = new UiProperties(1, 2);
+
+        assertThat(properties.pageSize()).isEqualTo(1);
+        assertThat(properties.maxMessageChars()).isEqualTo(2);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, -1})
     void rejectsNonPositivePageSize(int pageSize) {
-        assertThatThrownBy(() -> new UiProperties(pageSize))
+        assertThatThrownBy(() -> new UiProperties(pageSize, 1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("hitlmcp.ui.page-size");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void rejectsNonPositiveMaxMessageChars(int maxMessageChars) {
+        assertThatThrownBy(() -> new UiProperties(1, maxMessageChars))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("hitlmcp.ui.max-message-chars");
     }
 }

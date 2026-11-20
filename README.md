@@ -92,6 +92,7 @@ or with `HitlMcpServer.builder().property(name, value)`.
 |---|---|---|
 | `server.port` | `8080` | HTTP port, `0` picks a free one |
 | `hitlmcp.ui.page-size` | `100000` | Characters of an input or result shown on one page of a card |
+| `hitlmcp.ui.max-message-chars` | `2000000` | Characters of a decision the review page may send, with the updated result and reason |
 | `hitlmcp.review.updated-result-prefix` | `the result was modified by the reviewer: ` | Put before a result the reviewer replaced; empty for none |
 | `hitlmcp.history.file` | `log/call-history.jsonl` | History file |
 | `hitlmcp.history.input-max-chars` | `100000` | Characters of the input stored in history |

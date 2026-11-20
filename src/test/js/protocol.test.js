@@ -360,3 +360,86 @@ describe('decisions', () => {
         assert.equal(card.querySelector('.accept').disabled, false, 'the user can try again after reconnecting');
     });
 });
+
+describe('decision size', () => {
+    /** Connects with a snapshot that limits messages to the given number of characters. */
+    function connectWithLimit(reviews, maxMessageChars) {
+        page.socket.serverAccepts();
+        page.socket.serverSends({ type: 'snapshot', pageSize: 2000, maxMessageChars, reviews });
+    }
+
+    function resultReview() {
+        return review({ id: 'x', phase: 'AWAITING_RESULT_APPROVAL', output: 'r' });
+    }
+
+    it('sends a decision within the limit', () => {
+        page = openPage();
+        connectWithLimit([resultReview()], 1000);
+        const card = page.card();
+        page.type(card.querySelector('.updated-result'), 'y'.repeat(500));
+
+        card.querySelector('.accept').click();
+
+        assert.equal(page.socket.sent.length, 1);
+        assert.deepEqual(page.alerts, []);
+    });
+
+    it('does not send a decision above the limit and tells the user', () => {
+        page = openPage();
+        connectWithLimit([resultReview()], 1000);
+        const card = page.card();
+        page.type(card.querySelector('.updated-result'), 'y'.repeat(1000));
+
+        card.querySelector('.accept').click();
+
+        assert.equal(page.socket.sent.length, 0);
+        assert.equal(page.alerts.length, 1);
+        assert.match(page.alerts[0], /too long to send: \d+ characters, the server accepts at most 1000/);
+        assert.equal(page.socket.readyState, page.window.WebSocket.OPEN, 'the connection stays open');
+        assert.equal(card.querySelector('.accept').disabled, false, 'the user can shorten the text and retry');
+        assert.equal(card.querySelector('.updated-result').value.length, 1000, 'the text is kept');
+    });
+
+    it('counts the reason too', () => {
+        page = openPage();
+        connectWithLimit([resultReview()], 1000);
+        const card = page.card();
+        page.type(card.querySelector('.reason'), 'z'.repeat(1000));
+
+        card.querySelector('.deny').click();
+
+        assert.equal(page.socket.sent.length, 0);
+        assert.equal(page.alerts.length, 1);
+    });
+
+    it('sends any size to a server that does not tell its limit', () => {
+        page = openPage();
+        page.connect([resultReview()]);
+        const card = page.card();
+        page.type(card.querySelector('.updated-result'), 'y'.repeat(100000));
+
+        card.querySelector('.accept').click();
+
+        assert.equal(page.socket.sent.length, 1);
+    });
+
+    it('explains a connection closed because a message was too big', () => {
+        page = openPage();
+        page.connect([resultReview()]);
+
+        page.socket.serverCloses(1009);
+
+        assert.equal(page.alerts.length, 1);
+        assert.match(page.alerts[0], /rejected the decision because it is too long/);
+        assert.equal(page.timers.at(-1).delay, 2000, 'it still reconnects');
+    });
+
+    it('stays quiet about other closes', () => {
+        page = openPage();
+        page.connect([resultReview()]);
+
+        page.socket.serverCloses(1006);
+
+        assert.deepEqual(page.alerts, []);
+    });
+});

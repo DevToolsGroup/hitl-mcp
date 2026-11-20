@@ -98,9 +98,10 @@ export function openPage({ query = '', origin = 'http://localhost:8080' } = {}) 
                     this.emit('message', { data: JSON.stringify(message) });
                 }
 
-                serverCloses() {
+                /** 1006 is what a browser reports when the connection is lost without a close frame. */
+                serverCloses(code = 1006) {
                     this.readyState = FakeWebSocket.CLOSED;
-                    this.emit('close', {});
+                    this.emit('close', { code });
                 }
 
                 emit(type, event) {
